@@ -1,0 +1,47 @@
+#!/usr/bin/ruby
+
+require 'pp'
+
+$: << './lib'
+
+require 'dnsomatic'
+
+begin
+  $opts = DNSOMatic::Opts.instance
+  $opts.parse(ARGV)
+
+  #we want a handle on this so that we can call .save on it when we're done
+  $ipcache = DNSOMatic::IPFetchCache.instance
+
+  c = DNSOMatic::Config.new($opts.cf)
+
+  if $opts.showcf
+    $stdout.puts "This is your configuration after merging in the defaults."
+    $stdout.puts "It has been pruned to only display the stanza named: #{$opts.name}" if $opts.name
+    $stdout.puts c.merged_config($opts.name)
+    exit
+  end
+
+  if $opts.stanza and $opts.verbose
+    $stdout.puts "Will only update #{$opts.name}."
+  end
+
+  updaters = c.updaters($opts.name)
+
+  updaters.each_pair do |name, obj|
+    $stdout.puts "Working with host update definition: #{name}" if $opts.verbose
+    if $opts.print
+      puts obj
+    else
+      obj.send( $opts.force ? 'update!' : 'update')
+    end
+  end
+
+  $ipcache.save
+rescue => ex
+  if ex.kind_of?(DNSOMatic::StdErr)
+    $stderr.puts ex
+  else
+    raise
+  end
+end
