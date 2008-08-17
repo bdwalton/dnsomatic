@@ -1,5 +1,4 @@
 require 'singleton'
-require 'dnsomatic/http'
 require 'date'
 
 module DNSOMatic
@@ -13,7 +12,7 @@ module DNSOMatic
       @@ip_fetch_map = {}
 
       if File.exists?(@@cache_file)
-	@@ip_fetch_map = DNSOMatic::YAMLWrap::read(@@cache_file)
+	@@ip_fetch_map = DNSOMatic::yaml_read(@@cache_file)
       end
     end
 
@@ -33,13 +32,13 @@ module DNSOMatic
       case upd
       when /unknown|expired/:
 	$stdout.puts "Doing IP fetch from #{url} (#{upd})" if $opts.verbose
-	ip = DNSOMatic::HTTPAgent.fetch(url)
+	ip = DNSOMatic::http_fetch(url)
 
 	if !ip.match(/(\d{1,3}\.){3}\d{1,3}/)
 	  msg = "Strange return value from IP Lookup service: #{url}\n"
 	  msg += "Body of HTTP response was:\n"
 	  msg += ip
-	  raise DNSOMatic::HttpErr, msg
+	  raise(DNSOMatic::Error, msg)
 	end
 
 	@@ip_fetch_map[url] = { :ip => ip, :time => Time.now }
@@ -56,7 +55,7 @@ module DNSOMatic
     end
 
     def save
-      DNSOMatic::YAMLWrap::write(@@cache_file, @@ip_fetch_map)  
+      DNSOMatic::yaml_write(@@cache_file, @@ip_fetch_map)  
     end
   end
 end

@@ -16,13 +16,21 @@ module DNSOMatic
       @@opts.print = false
       @@opts.verbose = false
       @@opts.interval = 1800
+      @@opts.debug = false
+      @@opts.alert = false
     end
 
     def parse(args)
       begin
 	opts = OptionParser.new do |o|
 	  o.on('-i', '--interval SECONDS', 'Override the default (1800s) minimum interval between updates.') do |i|
-	    @@opts.intervalue = i.to_i
+	    @@opts.interval = i.to_i
+	  end
+
+	  #making this an option (off by default) means we can operate
+	  #completely silently by default.
+	  o.on('-a', '--alert', 'Emit an alert via stdout any time the IP for a host changes.') do |a|
+	    @@opts.alert = true
 	  end
 
 	  o.on('-n', '--name NAME', 'Only update host stanza NAME') do |n|
@@ -47,6 +55,10 @@ module DNSOMatic
 
 	  o.on('-v', '--verbose', 'Display runtime messages.') do
 	    @@opts.verbose = true
+	  end
+
+	  o.on('-x', '--debug', 'Output additional info in error situations.') do
+	    @@opts.debug = true
 	  end
 
 	  o.on('-h', '--help', 'Display this help text') { puts o; exit; }

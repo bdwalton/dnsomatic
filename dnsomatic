@@ -38,10 +38,19 @@ begin
   end
 
   $ipcache.save
-rescue => ex
-  if ex.kind_of?(DNSOMatic::StdErr)
-    $stderr.puts ex
-  else
-    raise
+rescue DNSOMatic::Error => e
+  $stderr.puts e
+  if $opts.debug
+    $stderr.puts "Backtrace:"
+    $stderr.puts e.backtrace
   end
+rescue => e
+  $stderr.puts "Rescued an unhandled exception of type: #{e.class}"
+  $stderr.puts "The exception contains the following message:"
+  $stderr.puts e.message
+  if $opts.debug
+    $stderr.puts "Backtrace:"
+    $stderr.puts e.backtrace
+  end
+  exit 1
 end

@@ -12,16 +12,18 @@ module DNSOMatic
       url, status = upd_url()
 
       if status.eql?('unchanged') and !force
-	$stdout.puts "No change detected in IP.  Not updating." if $opts.verbose
+	$stdout.puts "No change in IP detected for #{@config['hostname']}.  Not updating." if $opts.verbose
       else
-	$stdout.puts "Updating IP for #{@config['hostname']}." if $opts.verbose
-	update = DNSOMatic::HTTPAgent.fetch(url)
+	if $opts.verbose or $opts.alert
+	  $stdout.puts "Updating IP for #{@config['hostname']} to #@ip."
+	end
+	update = DNSOMatic::http_fetch(url)
 
 	if !update.match(/^good\s+#{@ip}$/)
 	  msg = "Error updating host definition for #{@config['hostname']}\n"
 	  msg += "Results:\n#{update}\n"
 	  msg += "Error codes at: https://www.dnsomatic.com/wiki/api"
-	  raise DNSOMatic::UpdErr, msg
+	  raise(DNSOMatic::Error, msg)
 	end
       end
     end
