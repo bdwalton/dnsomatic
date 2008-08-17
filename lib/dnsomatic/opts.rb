@@ -9,18 +9,11 @@ module DNSOMatic
     include Singleton
 
     def initialize
-      @@opts.name = nil
-      @@opts.cf = nil
-      @@opts.showcf = false
-      @@opts.force = false
-      @@opts.print = false
-      @@opts.verbose = false
-      @@opts.interval = 1800
-      @@opts.debug = false
-      @@opts.alert = false
+      setdefaults()
     end
 
     def parse(args)
+      setdefaults()
       begin
 	opts = OptionParser.new do |o|
 	  o.on('-i', '--interval SECONDS', 'Override the default (1800s) minimum interval between updates.') do |i|
@@ -76,5 +69,19 @@ module DNSOMatic
     def method_missing(meth, *args)
       @@opts.send(meth)
     end
+
+    private
+    def setdefaults
+      @@opts.name = nil
+      @@opts.cf = nil
+      @@opts.showcf = false
+      @@opts.force = false
+      @@opts.print = false
+      @@opts.verbose = false
+      @@opts.interval = 1800
+      @@opts.debug = false
+      @@opts.alert = false
+    end
+
   end
 end
