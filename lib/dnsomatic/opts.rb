@@ -23,13 +23,13 @@ module DNSOMatic
     def parse(args)
       begin
 	opts = OptionParser.new do |o|
-	  o.on('-i', '--interval SECONDS', 'Override the default (1800s) minimum interval between updates.') do |i|
+	  o.on('-i', '--interval SECONDS', 'Override the minimum update interval.') do |i|
 	    @@opts.interval = i.to_i
 	  end
 
 	  #making this an option (off by default) means we can operate
 	  #completely silently by default.
-	  o.on('-a', '--alert', 'Emit an alert via stdout any time the IP for a host changes.') do |a|
+	  o.on('-a', '--alert', 'Emit an alert if the IP is updated.') do |a|
 	    @@opts.alert = true
 	  end
 
@@ -45,11 +45,11 @@ module DNSOMatic
 	    @@opts.cf = f
 	  end
 
-	  o.on('-f', '--force', 'Force update, even if no IP change detected.') do
+	  o.on('-f', '--force', 'Force an update, even if IP is unchanged.') do
 	    @@opts.force = true
 	  end
 
-	  o.on('-p', '--print', 'Output the URLs that would be used for the updates, but take not action.') do
+	  o.on('-p', '--print', 'Output the update URLs.  No action taken.') do
 	    @@opts.print = true
 	  end
 
