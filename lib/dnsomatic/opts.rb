@@ -64,9 +64,12 @@ module DNSOMatic
 	  o.on('-h', '--help', 'Display this help text') { puts o; exit; }
 	end
 	opts.parse!(args)
+
       rescue OptionParser::ParseError => e
-	$stderr.puts "Invalid arguments used: #{e.message}"
-	exit 1
+	msg = "Extra/Unknown arguments used:\n"
+	msg += "\t#{e.message}\n"
+	msg += "Remaining args: #{args.join(', ')}" if args.size > 0
+	raise(DNSOMatic::Error, msg)
       end
     end
 

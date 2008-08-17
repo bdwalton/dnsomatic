@@ -5,7 +5,7 @@ module DNSOMatic
   VERSION = 0.1
   USERAGENT = "Ruby_DNS-o-Matic/#{VERSION}"
 
-  class Error; end #just for a unique name, more than anything else.
+  class Error < Exception; end #just for a unique name, more than anything else.
 
   def self.http_fetch (url)
     uri = URI.parse(url)

@@ -1,7 +1,5 @@
 #!/usr/bin/ruby
 
-require 'pp'
-
 $: << './lib'
 
 require 'dnsomatic'
