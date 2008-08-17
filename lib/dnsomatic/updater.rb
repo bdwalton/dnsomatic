@@ -11,7 +11,7 @@ module DNSOMatic
     def update(force = false)
       url, status = upd_url()
 
-      if status.eql?('unchanged') and !force
+      if !status.changed? and !force
 	$stdout.puts "No change in IP detected for #{@config['hostname']}.  Not updating." if $opts.verbose
       else
 	if $opts.verbose or $opts.alert
@@ -42,19 +42,19 @@ module DNSOMatic
       opt_params = %w(wildcard mx backmx offline)
       u = @config['username']
       p = @config['password']
-      ip, status = @ipcache.ip_for(@config['webipfetchurl'])
-      @ip = ip
+      ipstatus = @ipcache.ip_for(@config['webipfetchurl'])
+      @ip = ipstatus.ip
 
       #we'll use nil as a key from the ip lookup to determine that the ip
       #hasn't changed, so no update is required.
       url = "https://#{u}:#{p}@updates.dnsomatic.com/nic/update?"
-      name_ip = "hostname=#{@config['hostname']}&myip=#{ip}"
+      name_ip = "hostname=#{@config['hostname']}&myip=#{@ip}"
       url += opt_params.inject(name_ip) do |params, curp|
 	val = fmt(@config[curp])
 	next if val.eql?('') or val.nil?
 	params += "&#{curp}=#{val}"
       end
-      [url, status]
+      [url, ipstatus]
     end
 	
     def fmt(val)

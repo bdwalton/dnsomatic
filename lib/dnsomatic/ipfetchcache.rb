@@ -2,6 +2,24 @@ require 'singleton'
 require 'date'
 
 module DNSOMatic
+  class IPStatus
+    CHANGED = true
+    UNCHANGED = false
+
+    attr_reader :ip
+    def initialize(ip, status)
+      @ip = ip
+      unless [CHANGED, UNCHANGED].include?(status) 
+	raise DNSOMatic::Error, "Invalid Status for IP set."
+      end
+      @status = status
+    end
+
+    def changed?
+      @status
+    end
+  end
+
   class IPFetchCache
     include Singleton
 
@@ -47,14 +65,14 @@ module DNSOMatic
 
 	@@ip_fetch_map[url] = { :ip => ip, :time => Time.now }
 	if upd.eql?('expired') and ip.eql?(prev_ip)
-	  [ip, 'unchanged']
+	  IPStatus.new(ip, DNSOMatic::IPStatus::UNCHANGED)
 	else
-	  [ip, 'changed']
+	  IPStatus.new(ip, DNSOMatic::IPStatus::CHANGED)
 	end
       else
 	ip = @@ip_fetch_map[url][:ip]
 	$stdout.puts "Returned cached IP #{ip} from #{url}" if $opts.verbose
-	[ip, 'unchanged']
+	IPStatus.new(ip, DNSOMatic::IPStatus::UNCHANGED)
       end
     end
 
