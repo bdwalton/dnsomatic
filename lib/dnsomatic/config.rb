@@ -100,8 +100,32 @@ module DNSOMatic
 	  end
 	end
 
+	#just in case
+	stanza.each_pair do |k,v|
+	  stanza[k] = fmt(v)
+	end
+
 	#save our merged version in case we're just dump our config to stdout
 	@config[token] = stanza
+      end
+    end
+
+    def fmt(val)
+      #because YAML interprets a raw YES or NO as a boolean true/false and we
+      #don't want to burden user with prefixing the value with !str, we'll
+      #attempt to deduce what they meant here...
+      if [TrueClass, FalseClass].include?(val.class)
+	val ? 'ON' : 'OFF'
+      elsif val.kind_of?(NilClass)
+	'NOCHG'
+      elsif val.kind_of?(String)
+	case val.downcase
+	  when 'no': 'OFF'
+	  when 'yes': 'ON'
+	  else val
+	end
+      else
+	val.to_s
       end
     end
   end

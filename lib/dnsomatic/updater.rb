@@ -9,17 +9,17 @@ module DNSOMatic
     end
 
     def update(force = false)
-      url, status = upd_url()
+      url = upd_url()
 
       if !status.changed? and !force
 	$stdout.puts "No change in IP detected for #{@config['hostname']}.  Not updating." if $opts.verbose
       else
 	if $opts.verbose or $opts.alert
-	  $stdout.puts "Updating IP for #{@config['hostname']} to #@ip."
+	  $stdout.puts "Updating IP for #{@config['hostname']} to #{@ipstatus.ip}."
 	end
 	update = DNSOMatic::http_fetch(url)
 
-	if !update.match(/^good\s+#{@ip}$/)
+	if !update.match(/^good\s+#{@ipstatus.ip}$/)
 	  msg = "Error updating host definition for #{@config['hostname']}\n"
 	  msg += "Results:\n#{update}\n"
 	  msg += "Error codes at: https://www.dnsomatic.com/wiki/api"
@@ -34,7 +34,7 @@ module DNSOMatic
     end
 
     def to_s
-      upd_url[0]
+      upd_url
     end
 	
     private
@@ -42,32 +42,18 @@ module DNSOMatic
       opt_params = %w(wildcard mx backmx offline)
       u = @config['username']
       p = @config['password']
-      ipstatus = @ipcache.ip_for(@config['webipfetchurl'])
-      @ip = ipstatus.ip
+      @ipstatus = @ipcache.ip_for(@config['webipfetchurl'])
 
       #we'll use nil as a key from the ip lookup to determine that the ip
       #hasn't changed, so no update is required.
       url = "https://#{u}:#{p}@updates.dnsomatic.com/nic/update?"
-      name_ip = "hostname=#{@config['hostname']}&myip=#{@ip}"
+      name_ip = "hostname=#{@config['hostname']}&myip=#{@ipstatus.ip}"
       url += opt_params.inject(name_ip) do |params, curp|
-	val = fmt(@config[curp])
+	val = @config[curp]
 	next if val.eql?('') or val.nil?
 	params += "&#{curp}=#{val}"
       end
-      [url, ipstatus]
-    end
-	
-    def fmt(val)
-      #because YAML interprets a raw YES or NO as a boolean true/false and we
-      #don't want to burden user with prefixing the value with !str, we'll
-      #attempt to deduce what they meant here...
-      if [TrueClass, FalseClass].include?(val.class)
-	val ? 'YES' : 'NO'
-      elsif val.kind_of?(NilClass)
-	'NOCHG'
-      else
-	val.to_s
-      end
+      url
     end
   end
 end #end module
