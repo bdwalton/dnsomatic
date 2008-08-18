@@ -19,7 +19,7 @@ module DNSOMatic
 	  o.on('-i', '--interval SECONDS', 'Override the minimum update interval.') do |i|
 	    @@opts.interval = i.to_i
 	  end
-
+#
 	  #making this an option (off by default) means we can operate
 	  #completely silently by default.
 	  o.on('-a', '--alert', 'Emit an alert if the IP is updated.') do |a|
@@ -48,6 +48,11 @@ module DNSOMatic
 
 	  o.on('-v', '--verbose', 'Display runtime messages.') do
 	    @@opts.verbose = true
+	  end
+
+	  o.on('--version', 'Display version and exit.') do
+	    $stdout.puts DNSOMatic::VERSION
+	    exit 0
 	  end
 
 	  o.on('-x', '--debug', 'Output additional info in error situations.') do
