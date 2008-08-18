@@ -16,23 +16,12 @@ class TestIPFetchCache < Test::Unit::TestCase
     $remote = 'http://www.whatismyip.org'
   end
 
-  def test_fresh_load_returns_new
-    ip, status = $ipcache.ip_for($local)
-    assert_equal('changed', status)
-    assert_equal('127.0.0.1', ip)
-  end
-
-  def test_second_load_returns_unchanged
-    ip, status = $ipcache.ip_for($local)
-    assert_equal('changed', status)
-    assert_equal('127.0.0.1', ip)
-    ip, status = $ipcache.ip_for($local)
-    assert_equal('unchanged', status)
-    assert_equal('127.0.0.1', ip)
-  end
-
-  def teardown
-    File.exists?($fp) && File.delete($fp)
+  def test_cache_works
+    stat = $ipcache.ip_for($local)
+    assert_equal(DNSOMatic::IPStatus::CHANGED, stat.changed?)
+    assert_equal('127.0.0.1', stat.ip)
+    stat = $ipcache.ip_for($local)
+    assert_equal(DNSOMatic::IPStatus::UNCHANGED, stat.changed?)
   end
 
 end
