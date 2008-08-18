@@ -23,12 +23,8 @@ module DNSOMatic
   class IPFetchCache
     include Singleton
 
-    def initialize(altfn = nil)
-      if altfn.nil?
-	fn = 'dnsomatic-' + Process.uid.to_s + '.cache'
-      else
-	fn = altfn
-      end
+    def initialize
+      fn = 'dnsomatic-' + Process.uid.to_s + '.cache'
       @@cache_file = File.join(ENV['TEMP'] || '/tmp', fn)
 
       @@ip_fetch_map = {}
