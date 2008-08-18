@@ -3,7 +3,7 @@
 begin
   require 'dnsomatic'
 rescue LoadError => e
-  $: << '../lib'
+  $: << File.join(File.dirname($0), '..', 'lib')
   retry
 end
 
