@@ -1,8 +1,11 @@
 #!/usr/bin/ruby
 
-$: << './lib'
-
-require 'dnsomatic'
+begin
+  require 'dnsomatic'
+rescue LoadError => e
+  $: << '../lib'
+  retry
+end
 
 begin
   $opts = DNSOMatic::Opts.instance
