@@ -27,20 +27,16 @@ module DNSOMatic
 	@cf = nil
       end
 
-      if $opts.verbose
-	if @cf
-	  $stdout.puts "Using config file #{@cf}"
-	else
-	  $stdout.puts "Couldn't find a user config.  Using defaults only."
-	end
-      end
-
       @updaters = nil
       @config = {}
 
       # the user config must supply values for these, either in a specific
       # host updater stanza or by overriding the global default in defaults:
       @req_conf = %w(username password)
+
+      msg = @cf.nil? ?  "Couldn't find a user config.  Using defaults only." : \
+	  "Using config file #{@cf}"
+      Logger::log(msg)
 
       load()
     end
@@ -56,7 +52,7 @@ module DNSOMatic
       if @updaters.nil?
 	@updaters = {}
 	@config.each_key do |token|
-	  @updaters[token] = DNSOMatic::Updater.new(@config[token])
+	  @updaters[token] = Updater.new(@config[token])
 	end
       end
 

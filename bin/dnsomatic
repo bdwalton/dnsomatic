@@ -11,9 +11,6 @@ begin
   $opts = DNSOMatic::Opts.instance
   $opts.parse(ARGV)
 
-  #we want a handle on this so that we can call .save on it when we're done
-  $ipcache = DNSOMatic::IPFetchCache.instance
-
   c = DNSOMatic::Config.new($opts.cf)
 
   if $opts.showcf
@@ -37,8 +34,6 @@ begin
       obj.send( $opts.force ? 'update!' : 'update')
     end
   end
-
-  $ipcache.save
 rescue DNSOMatic::Error => e
   $stderr.puts e
   if $opts.debug

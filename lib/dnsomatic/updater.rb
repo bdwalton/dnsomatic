@@ -5,18 +5,16 @@ module DNSOMatic
       @config = config
       #use a cache in case other host stanzas have already looked up
       #our ip using the same remote agent.
-      @ipcache = DNSOMatic::IPFetchCache.instance
+      @ipcache = DNSOMatic::IPLookup.instance
     end
 
     def update(force = false)
       url = upd_url()
 
-      if !status.changed? and !force
-	$stdout.puts "No change in IP detected for #{@config['hostname']}.  Not updating." if $opts.verbose
+      if !@ipstatus.changed? and !force
+	Logger::log("No change in IP detected for #{@config['hostname']}.  Not updating.")
       else
-	if $opts.verbose or $opts.alert
-	  $stdout.puts "Updating IP for #{@config['hostname']} to #{@ipstatus.ip}."
-	end
+	Logger::alert("Updating IP for #{@config['hostname']} to #{@ipstatus.ip}.")
 	update = DNSOMatic::http_fetch(url)
 
 	if !update.match(/^good\s+#{@ipstatus.ip}$/)
@@ -29,7 +27,7 @@ module DNSOMatic
     end
 
     def update!
-      $stdout.puts "Forcing update due to use of -f." if $opts.verbose
+      Logger::log("Forcing update due to use of -f.")
       update(true)
     end
 

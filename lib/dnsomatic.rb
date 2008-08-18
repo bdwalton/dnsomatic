@@ -53,4 +53,5 @@ end
 require 'dnsomatic/opts'
 require 'dnsomatic/config'
 require 'dnsomatic/updater'
-require 'dnsomatic/ipfetchcache'
+require 'dnsomatic/iplookup'
+require 'dnsomatic/logger'
