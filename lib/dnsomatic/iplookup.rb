@@ -43,7 +43,7 @@ module DNSOMatic
       #implement a simple cache to prevent making multiple http requests
       #to the same remote agent (in the case where a user defines multiple
       #updater stanzas that use the same ip fetch url).
-      if @fetch_map[url] and Time.now - @fetch_map[url][:time] >= $opts.interval
+      if @fetch_map[url] and Time.now - @fetch_map[url][:time] <= $opts.interval
 	ip = @fetch_map[url][:ip]
 	time = @fetch_map[url][:time]
 	stat = IPStatus::UNCHANGED
