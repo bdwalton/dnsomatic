@@ -63,6 +63,10 @@ module DNSOMatic
 	end
 	opts.parse!(args)
 
+	if args.size
+	  raise(DNSOMatic::Error, "Extra arguments given: #{args.join(', ')}")
+	end
+
       rescue OptionParser::ParseError => e
 	msg = "Extra/Unknown arguments used:\n"
 	msg += "\t#{e.message}\n"
