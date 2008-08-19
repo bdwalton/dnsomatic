@@ -39,7 +39,7 @@ module DNSOMatic
     end
 
     def ip_for(url)
-      load() if @persist
+      load()
       #implement a simple cache to prevent making multiple http requests
       #to the same remote agent (in the case where a user defines multiple
       #updater stanzas that use the same ip fetch url).
