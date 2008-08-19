@@ -23,18 +23,18 @@ module DNSOMatic
   class IPLookup
     include Singleton
 
+    attr_accessor :persist
+
     def initialize
       fn = 'dnsomatic-' + Process.uid.to_s + '.cache'
       @cache_file = File.join(ENV['TEMP'] || '/tmp', fn)
 
       @fetch_map = {}
-
-      if File.exists?(@cache_file)
-	@fetch_map = DNSOMatic::yaml_read(@cache_file)
-      end
+      @persist = true
     end
 
     def ip_for(url)
+      load() if @persist
       #implement a simple cache to prevent making multiple http requests
       #to the same remote agent (in the case where a user defines multiple
       #updater stanzas that use the same ip fetch url).
@@ -46,8 +46,10 @@ module DNSOMatic
       else  #unknown or expired
 	prev_ip = @fetch_map[url].nil? ? '' : @fetch_map[url][:ip]
 	ip = DNSOMatic::http_fetch(url)
-	stat = ip.eql?(prev_ip) ? IPStatus::UNCHANGED : IPStatus::CHANGED
-	time = ip.eql?(prev_ip) ? @fetch_map[url][:time] : Time.now
+	stat, time = case ip
+	      when prev_ip: [IPStatus::UNCHANGED, @fetch_map[url][:time]]
+	      else [IPStatus::CHANGED, Time.now]
+	    end
 	Logger::log("Feched IP #{ip} from #{url}")
       end
 
@@ -64,8 +66,14 @@ module DNSOMatic
     end
 
     private
+    def load
+      if File.exists?(@cache_file) and @persist
+	@fetch_map = DNSOMatic::yaml_read(@cache_file)
+      end
+    end
+
     def save
-      DNSOMatic::yaml_write(@cache_file, @fetch_map)  
+      DNSOMatic::yaml_write(@cache_file, @fetch_map) if @persist 
     end
   end
 end

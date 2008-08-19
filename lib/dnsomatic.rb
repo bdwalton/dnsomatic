@@ -1,6 +1,5 @@
 require 'yaml'
 require 'open-uri'
-require 'cgi'
 
 module DNSOMatic
   VERSION = 0.1
@@ -9,7 +8,7 @@ module DNSOMatic
   class Error < Exception; end #just for a unique name, more than anything else.
 
   def self.http_fetch (url)
-    uri = URI.parse(CGI.escape(url))
+    uri = URI.parse(url)
 
     begin
       res = if uri.user and uri.password
