@@ -33,6 +33,11 @@ module DNSOMatic
       @persist = true
     end
 
+    def setcachefile(file)
+      raise(DNSOMatic::Error, "Unwritable cache file") unless File.writable?(File.dirname(file))
+      @cache_file = file
+    end
+
     def ip_for(url)
       load() if @persist
       #implement a simple cache to prevent making multiple http requests
