@@ -118,10 +118,10 @@ module DNSOMatic
 	case val.downcase
 	  when 'no': 'OFF'
 	  when 'yes': 'ON'
-	  else val
+	  else val.gsub(/\s+/, '')
 	end
       else
-	val.to_s
+	val.to_s.gsub(/\s+/, '')
       end
     end
   end
