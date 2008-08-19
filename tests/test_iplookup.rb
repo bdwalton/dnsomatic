@@ -9,14 +9,13 @@ require 'dnsomatic'
 class TestIPLookup < Test::Unit::TestCase
   def setup
     $opts = DNSOMatic::Opts.instance
-    $fp = File.join('/tmp', 'dnsomatic.testcache')
+    $fp = File.join('/tmp', 'dnsomatic.testcache-' + Process.pid.to_s)
     $iplookup = DNSOMatic::IPLookup.instance
     $iplookup.setcachefile($fp)
     $iplookup.persist = false
     $local = 'http://benandwen.net/~bwalton/ip_lookup.php'
     $local_ip = '192.168.0.15'
     $random = 'http://benandwen.net/~bwalton/ip_rand.php'
-    $remote = 'http://www.whatismyip.org'
   end
 
   def test_cache_works
@@ -34,9 +33,16 @@ class TestIPLookup < Test::Unit::TestCase
 
   def test_known_ip_change_still_prefers_cache
     stat = $iplookup.ip_for($random)
-    assert_equal(DNSOMatic::IPStatus::CHANGED, stat.changed?)
+    assert_equal(DNSOMatic::IPStatus::UNCHANGED, stat.changed?)
+  end
+
+  def test_expiration_with_known_change
     stat = $iplookup.ip_for($random)
     assert_equal(DNSOMatic::IPStatus::UNCHANGED, stat.changed?)
+    $opts.parse(%w(-i 2)) #change expiration to 2s.
+    sleep(3)  #make sure we pass the expiration time we just set.
+    stat = $iplookup.ip_for($random)
+    assert_equal(DNSOMatic::IPStatus::CHANGED, stat.changed?)
   end
 
   def teardown
