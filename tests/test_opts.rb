@@ -64,4 +64,8 @@ class TestOpts < Test::Unit::TestCase
     assert_raise(DNSOMatic::Error) { $opts.parse(%w(--badoption)) }
   end
 
+  def test_extra_args_raise_exception
+    assert_raise(DNSOMatic::Error) { $opts.parse(%w(somearg)) }
+  end
+
 end
