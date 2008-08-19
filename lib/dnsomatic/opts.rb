@@ -63,7 +63,7 @@ module DNSOMatic
 	end
 	opts.parse!(args)
 
-	if args.size
+	if args.size > 0
 	  raise(DNSOMatic::Error, "Extra arguments given: #{args.join(', ')}")
 	end
 
