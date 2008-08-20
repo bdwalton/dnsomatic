@@ -14,7 +14,7 @@ class TestIPLookup < Test::Unit::TestCase
     $iplookup.setcachefile($fp)
     $iplookup.persist = false
     $local = 'http://benandwen.net/~bwalton/ip_lookup.php'
-    $local_ip = '192.168.0.15'
+    $local_ip = %x{wget -q -O - http://benandwen.net/~bwalton/ip_lookup.php}
     $random = 'http://benandwen.net/~bwalton/ip_rand.php'
   end
 
@@ -43,6 +43,12 @@ class TestIPLookup < Test::Unit::TestCase
     sleep(3)  #make sure we pass the expiration time we just set.
     stat = $iplookup.ip_for($random)
     assert_equal(DNSOMatic::IPStatus::CHANGED, stat.changed?)
+  end
+
+  def test_persist_stores_to_file
+    $iplookup.persist = true
+    stat = $iplookup.ip_for($random)
+    assert(File.exists?($fp), "${fp} doesn't exist when persist is enabled.")
   end
 
   def teardown
