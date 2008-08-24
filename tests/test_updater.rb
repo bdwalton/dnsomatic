@@ -18,7 +18,16 @@ class TestUpdater < Test::Unit::TestCase
     $random = 'http://benandwen.net/~bwalton/ip_rand.php'
   end
 
+  def giveconf(u, p, mx, bmx, w, o, wf = $local, hn = 'all.dnsomatic.com')
+    { 'username' => u, 'password' => p, 'mx' => mx, 'backmx' => bmx,
+	'wildcard' => w, 'offline' => o , 'webipfetchurl' => wf,
+	'hostname' => hn}
+  end
+
   def test_config_taken
-    
+    c = giveconf('user', 'mypass', 'NOCHG', 'NOCHG', 'NOCHG', 'NOCHG')
+    url = "https://user:mypass@updates.dnsomatic.com/nic/update?hostname=all.dnsomatic.com&myip=#{$local_ip}&wildcard=NOCHG&mx=NOCHG&backmx=NOCHG&offline=NOCHG"
+    u = DNSOMatic::Updater.new(c)
+    assert_equal(url, u.to_s)
   end
 end
