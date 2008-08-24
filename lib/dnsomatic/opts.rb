@@ -16,8 +16,12 @@ module DNSOMatic
       setdefaults()
       begin
 	opts = OptionParser.new do |o|
-	  o.on('-i', '--interval SECONDS', 'Override the minimum update interval.') do |i|
-	    @@opts.interval = i.to_i
+	  o.on('-m', '--minimum SECONDS', 'Override the minimum time between updates (def = 30m).') do |i|
+	    @@opts.minimum = i.to_i
+	  end
+
+	  o.on('-M', '--maximum SECONDS', 'Override the maximum time between updates (def = 15d).') do |i|
+	    @@opts.maximum = i.to_i
 	  end
 #
 	  #making this an option (off by default) means we can operate
@@ -50,7 +54,7 @@ module DNSOMatic
 	    @@opts.verbose = true
 	  end
 
-	  o.on('--version', 'Display version and exit.') do
+	  o.on('-V', '--version', 'Display version and exit.') do
 	    $stdout.puts DNSOMatic::VERSION
 	    exit 0
 	  end
@@ -87,7 +91,8 @@ module DNSOMatic
       @@opts.force = false
       @@opts.print = false
       @@opts.verbose = false
-      @@opts.interval = 1800
+      @@opts.minimum = 1800 #30 minutes
+      @@opts.maximum = 1296000	#15 days
       @@opts.debug = false
       @@opts.alert = false
     end
