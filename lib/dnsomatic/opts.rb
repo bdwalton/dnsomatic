@@ -16,17 +16,17 @@ module DNSOMatic
       setdefaults()
       begin
 	opts = OptionParser.new do |o|
-	  o.on('-m', '--minimum SECONDS', 'Override the minimum time between updates (def = 30m).') do |i|
+	  o.on('-m', '--minimum SEC', 'The minimum time between updates (def: 30m)') do |i|
 	    @@opts.minimum = i.to_i
 	  end
 
-	  o.on('-M', '--maximum SECONDS', 'Override the maximum time between updates (def = 15d).') do |i|
+	  o.on('-M', '--maximum SEC', 'The maximum time between updates (def: 15d)') do |i|
 	    @@opts.maximum = i.to_i
 	  end
 #
 	  #making this an option (off by default) means we can operate
 	  #completely silently by default.
-	  o.on('-a', '--alert', 'Emit an alert if the IP is updated.') do |a|
+	  o.on('-a', '--alert', 'Emit an alert if the IP is updated') do |a|
 	    @@opts.alert = true
 	  end
 
@@ -34,32 +34,32 @@ module DNSOMatic
 	    @@opts.name = n
 	  end
 
-	  o.on('-d', '--display-config', 'Display the configuration and exit.') do 
+	  o.on('-d', '--display-config', 'Display the configuration and exit') do 
 	    @@opts.showcf = true
 	  end
 
-	  o.on('-c', '--config FILE', 'Use an alternate config file.') do |f|
+	  o.on('-c', '--config FILE', 'Use an alternate config file') do |f|
 	    @@opts.cf = f
 	  end
 
-	  o.on('-f', '--force', 'Force an update, even if IP is unchanged.') do
+	  o.on('-f', '--force', 'Force an update, even if IP is unchanged') do
 	    @@opts.force = true
 	  end
 
-	  o.on('-p', '--print', 'Output the update URLs.  No action taken.') do
+	  o.on('-p', '--print', 'Output the update URLs.  No action taken') do
 	    @@opts.print = true
 	  end
 
-	  o.on('-v', '--verbose', 'Display runtime messages.') do
+	  o.on('-v', '--verbose', 'Display runtime messages') do
 	    @@opts.verbose = true
 	  end
 
-	  o.on('-V', '--version', 'Display version and exit.') do
+	  o.on('-V', '--version', 'Display version and exit') do
 	    $stdout.puts DNSOMatic::VERSION
 	    exit 0
 	  end
 
-	  o.on('-x', '--debug', 'Output additional info in error situations.') do
+	  o.on('-x', '--debug', 'Output additional info in error situations') do
 	    @@opts.debug = true
 	  end
 
