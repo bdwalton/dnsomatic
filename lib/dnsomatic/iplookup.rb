@@ -29,12 +29,12 @@ module DNSOMatic
 
 	if !@ip.eql?(ip)
 	  Logger::log("Detected IP change (#{@ip} -> #{ip}) from #{@url}.")
-	  @ip = ip
 	else
 	  Logger::log("No IP change detected from #{@url}.")
 	end
 
 	@status = (max_elapsed? or !@ip.eql?(ip)) ? CHANGED : UNCHANGED
+	@ip = ip
       end
     end
 
