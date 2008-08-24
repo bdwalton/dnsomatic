@@ -24,10 +24,12 @@ module DNSOMatic
 	  raise(DNSOMatic::Error, msg)
 	end
       end
+
+      true
     end
 
     def update!
-      Logger::log("Forcing update due to use of -f.")
+      Logger::log("Forcing update at user request.")
       update(true)
     end
 
