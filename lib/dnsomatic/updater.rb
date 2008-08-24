@@ -5,7 +5,7 @@ module DNSOMatic
       @config = config
       #use a cache in case other host stanzas have already looked up
       #our ip using the same remote agent.
-      @ipcache = DNSOMatic::IPLookup.instance
+      @lookup = DNSOMatic::IPLookup.instance
     end
 
     def update(force = false)
@@ -40,7 +40,7 @@ module DNSOMatic
       opt_params = %w(wildcard mx backmx offline)
       u = @config['username']
       p = @config['password']
-      @ipstatus = @ipcache.ip_for(@config['webipfetchurl'])
+      @ipstatus = @lookup.ip_from_url(@config['webipfetchurl'])
 
       #we'll use nil as a key from the ip lookup to determine that the ip
       #hasn't changed, so no update is required.

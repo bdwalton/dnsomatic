@@ -7,23 +7,66 @@ module DNSOMatic
     UNCHANGED = false
 
     attr_reader :ip
-    def initialize(ip, status)
-      if !ip.match(/(\d{1,3}\.){3}\d{1,3}/)
-	msg = "Strange return value from IP Lookup service: #{url}\n"
-	msg += "Body of HTTP response was:\n"
-	msg += ip
-	raise(DNSOMatic::Error, msg)
-      end
-      @ip = ip
-
-      unless [CHANGED, UNCHANGED].include?(status) 
-	raise DNSOMatic::Error, "Invalid Status for IP set."
-      end
-      @status = status
+    def initialize(url)
+      @url = url
+      @status = CHANGED	#all new lookups are changed.
+      @ip = getip()
+      @last_update = Time.now
+      Logger::log("Fetched new IP #{@ip} from #{@url}.")
     end
 
     def changed?
       @status
+    end
+
+    def update
+      if min_elapsed?
+	Logger::log("Returned cached IP #{@ip} from #{@url}.")
+	@status = UNCHANGED
+      else
+	ip = getip()
+	@last_update = @status ? Time.now : @last_update
+
+	if !@ip.eql?(ip)
+	  Logger::log("Detected IP change (#{@ip} -> #{ip}) from #{@url}.")
+	  @ip = ip
+	else
+	  Logger::log("No IP change detected from #{@url}.")
+	end
+
+	@status = (max_elapsed? or !@ip.eql?(ip)) ? CHANGED : UNCHANGED
+      end
+    end
+
+    private
+    def min_elapsed?
+      if Time.now - @last_update <= $opts.minimum
+	Logger::log("Minimum lookup interval not expired.")
+	true
+      else
+	false
+      end
+    end
+
+    def max_elapsed?
+      if Time.now - @last_update >= $opts.maximum
+	Logger::log("Maximum interval between updates has elapsed.  Update will be forced.")
+	true
+      else
+	false
+      end
+    end
+
+    def getip
+      ip = DNSOMatic::http_fetch(@url)
+      if !ip.match(/(\d{1,3}\.){3}\d{1,3}/)
+	msg = "Strange return value from IP Lookup service: #{@url}\n"
+	msg += "Body of HTTP response was:\n"
+	msg += ip
+	raise(DNSOMatic::Error, msg)
+      else
+	ip
+      end
     end
   end
 
@@ -41,49 +84,31 @@ module DNSOMatic
     end
 
     def setcachefile(file)
-      raise(DNSOMatic::Error, "Unwritable cache file") unless File.writable?(File.dirname(file))
+      if !File.writable?(File.dirname(file))
+	raise(DNSOMatic::Error, "Unwritable cache file directory.")
+      elsif File.exists?(file) and !File.writable(file)
+	raise(DNSOMatic::Error, "Unwritable cache file")
+      end
       @cache_file = file
     end
 
-    def ip_for(url)
+    def ip_from_url(url)
       load()
       #implement a simple cache to prevent making multiple http requests
       #to the same remote agent (in the case where a user defines multiple
       #updater stanzas that use the same ip fetch url).
-      if min_not_elapsed(url)
-	ip = @cache[url][:ip]
-	stat, time = [IPStatus::UNCHANGED, @cache[url][:time]]
-	Logger::log("Returned cached IP #{ip} from #{url}")
-      elsif max_elapsed(url)  #force updates to happen if no change in Xsec
-	ip = DNSOMatic::http_fetch(url) #poll just in case it has changed too
-	#we always set an updated time here so that min and max play nicely on
-	#future updates.
-	stat, time = [IPStatus::CHANGED, Time.now]
-	Logger::log("Forcing update of IP #{ip} from #{url} due\nto elapsed maximum update interval (#{$opts.maximum}s).")
-      else  #unknown or potentially changed
-	prev_ip = @cache[url].nil? ? '' : @cache[url][:ip]
-	ip = DNSOMatic::http_fetch(url)
-	stat, time = case ip
-	      when prev_ip: [IPStatus::UNCHANGED, @cache[url][:time]]
-	      else [IPStatus::CHANGED, Time.now]
-	    end
-	Logger::log("Feched IP #{ip} from #{url} (#{stat.eql?(IPStatus::CHANGED) ? 'changed' : 'unchanged'})")
+      if @cache[url]
+	@cache[url].update
+      #force updates to happen if no change in Xsec
+      else  #unknown
+	@cache[url] = IPStatus.new(url)
       end
 
-      @cache[url] = { :ip => ip, :time => time }
       save()  #ensure that we get spooled to disk.
-      IPStatus.new(ip, stat)
+      @cache[url]
     end
 
     private
-    def min_not_elapsed(url)
-      Time.now - (@cache[url][:time] || Time.now) <= $opts.minimum
-    end
-
-    def max_elapsed(url)
-      Time.now - (@cache[url][:time] || Time.now) >= $opts.maximum
-    end
-
     def load
       if File.exists?(@cache_file) and @persist
 	@cache = DNSOMatic::yaml_read(@cache_file)
