@@ -22,7 +22,7 @@ class TestIPLookup < Test::Unit::TestCase
     stat = $iplookup.ip_from_url($local)
     assert_equal(DNSOMatic::IPStatus::CHANGED, stat.changed?)
     assert_equal($local_ip, stat.ip)
-    stat = $iplookup.ip_from_url($local)
+    stat.update
     assert_equal(DNSOMatic::IPStatus::UNCHANGED, stat.changed?)
   end
 
@@ -32,6 +32,8 @@ class TestIPLookup < Test::Unit::TestCase
   end
 
   def test_known_ip_change_still_prefers_cache
+    #ensure we have a long interval between polls, so we know we get cached ip
+    $opts.parse(%w(-m 1800))
     stat = $iplookup.ip_from_url($random)
     assert_equal(DNSOMatic::IPStatus::UNCHANGED, stat.changed?)
   end
@@ -39,8 +41,8 @@ class TestIPLookup < Test::Unit::TestCase
   def test_expiration_with_known_change
     stat = $iplookup.ip_from_url($random)
     assert_equal(DNSOMatic::IPStatus::UNCHANGED, stat.changed?)
-    $opts.parse(%w(-i 2)) #change expiration to 2s.
-    sleep(3)  #make sure we pass the expiration time we just set.
+    $opts.parse(%w(-m 0)) #change expiration to 2s.
+    sleep(1)  #make sure we pass the expiration time we just set.
     stat = $iplookup.ip_from_url($random)
     assert_equal(DNSOMatic::IPStatus::CHANGED, stat.changed?)
   end
