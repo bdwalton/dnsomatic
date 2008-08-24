@@ -29,9 +29,7 @@ class TestIPStatus < Test::Unit::TestCase
 
     stat2 = DNSOMatic::IPStatus.new($random)
     assert_equal(true, stat2.changed?)
-    puts stat2.ip
     stat2.update
-    puts stat2.ip
     assert_equal(true, stat2.changed?)
   end
 
