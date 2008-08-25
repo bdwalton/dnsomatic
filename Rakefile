@@ -3,7 +3,7 @@ Gem::manage_gems
 require 'rake/gempackagetask'
 require 'rake/clean'
 
-CLEAN.include("pkg")
+CLEAN.include("pkg", "doc")
 
 spec = Gem::Specification.new do |s|
   s.name		= "dnsomatic"
