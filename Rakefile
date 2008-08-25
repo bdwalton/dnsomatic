@@ -19,6 +19,7 @@ spec = Gem::Specification.new do |s|
   s.default_executable	= 'dnsomatic'
   s.require_path	= 'lib'
   s.has_rdoc		= true
+  s.rdoc_options	= %(-x tests/)
   s.test_file		= 'tests/all_tests.rb'
 end
 
