@@ -48,6 +48,15 @@
 # expiration times), with the second polling for its IP at the
 # ipfetch.example.net url instead of the default myip.dnsomatic.com service.
 #
+# When there are update stanzas named specifically (in addition to defaults:),
+# defaults is used only to provide default values for the other stanzas.  For
+# most users wanting to define more than one updater stanza, you would provide
+# the username and password via the defaults: stanza and then a hostname value
+# for the individual stanza definitions.  Once the defaults are merged into the
+# specific stanzas, they are ignored.  To see how the merging works, you may
+# use the 'display' option (see options with --help), which will dump to stdout
+# a YAML serialized view of the merged configuration.
+#
 # This allows you to obtain an IP from multiple (or just alternate services).
 # Although this might sound less than useful, it would be handy if you wanted
 # different IP's associated with machines that could route to the internet via
