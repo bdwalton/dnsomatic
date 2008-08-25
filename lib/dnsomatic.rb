@@ -1,5 +1,91 @@
 require 'yaml'
 require 'open-uri'
+#
+# dnsomatic is a client updater for the DNS-o-Matic dynamic dns update service.
+#
+# To view program options, run with the -h or --help option.
+#
+# Author:: Ben Walton (mailto: bdwalton@gmail.com)
+# Copyright:: Copyright(c) 2008 Ben Walton
+# License:: GPL (http://www.gnu.org/copyleft/gpl.html)
+#
+# By default, dnsomatic tries to avoid polling or updating its address too
+# often.  It will not check a remote IP lookup url more often than every half
+# hour.  It will avoid updating DNS-o-Matic for up to 15 days if the IP
+# detected hasn't changed.
+#
+# Configuration is specified by a small YAML file with a default location
+# of $HOME/.dnsomatic.cf
+#
+# A basic configuration can be as simple as:
+#   defaults:
+#     username: YOUR_DNSOMATIC_USERNAME
+#     password: YOUR_DNSOMATIC_PASSWORD
+#
+# The dnsomatic client may update all of your registered DNS-o-Matic names
+# in one shot or individual names one at a time.  The defaults: stanza in the
+# configuration provides default values for any hostname update stanzas to
+# follow, although no extra stanzas are required.
+#
+# To provide alternate stanzas, add items in your config like:
+#   myhost:
+#     hostname: myhost.dyndns.foo
+#     mx: mx.example.net
+#
+# When that stanza is used in conjunction with the above defaults stanza, you
+# have a fully operation host update definition (myhost: would inherit the
+# username and password from defaults:)
+#
+# In some cases it may be desirable to fetch the Web visible IP for a system
+# from a different URL than the dnsomatic option (http://myip.dnsomatic.com).
+# To allow for this, you may add a webipfetchurl: paramter to a confiruation
+# stanza (or defaults:).  Consider:
+#   otherhost:
+#     hostname: otherhost.dyndns.foo
+#     webipfetchurl: http://ipfetch.example.net/
+#
+# If all three of the above stanzas were in the same configuration file, you
+# would send two update requests (conditional upon changed IP addresses and/or
+# expiration times), with the second polling for its IP at the
+# ipfetch.example.net url instead of the default myip.dnsomatic.com service.
+#
+# When there are update stanzas named specifically (in addition to defaults:),
+# defaults is used only to provide default values for the other stanzas.  For
+# most users wanting to define more than one updater stanza, you would provide
+# the username and password via the defaults: stanza and then a hostname value
+# for the individual stanza definitions.  Once the defaults are merged into the
+# specific stanzas, they are ignored.  To see how the merging works, you may
+# use the 'display' option (see options with --help), which will dump to stdout
+# a YAML serialized view of the merged configuration.
+#
+# This allows you to obtain an IP from multiple (or just alternate services).
+# Although this might sound less than useful, it would be handy if you wanted
+# different IP's associated with machines that could route to the internet via
+# two different public IP's, or if you wanted to poll an internal service and
+# update a public name with an internal IP.
+#
+# A complete list of options that may be specified in the defaults: or a named
+# update definition are:
+# * username: your dnsomatic username
+# * password: your dnsomatic password
+# * mx:	      a hostname that will handle mail delivery for this host.  it must
+#		resolve to an IP or DNS-o-Matic will ignore it.
+# * backmx:   a lower priority mx record.  sames rules as mx.  you may also
+#		list these as NOCHG, which tells DNS-o-Matic to leave them as
+#		is.
+# * hostname: the hostname to update.  the defaults specify this as
+#		all.dnsomatic.com, which tells dnsomatic to update all listed
+#		records with the same values.
+# * wildcard: indicates whether foo.hostname and bar.hostname and baz.hostname
+#		should also resolve to the same IP as hostname.
+#		ON = enable
+#		NOCHG = leave it as is
+#		_other_ = disable
+# * offline:  sets the hostname of offline mode, which may do some redirection
+#		things depending on the service being updated.
+#		YES = enable
+#		NOCHG = leave it as is
+#		_other_ = disable
 
 module DNSOMatic
   VERSION = 0.1
