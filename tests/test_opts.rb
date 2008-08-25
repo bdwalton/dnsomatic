@@ -18,11 +18,18 @@ class TestOpts < Test::Unit::TestCase
     assert($opts.verbose)
   end
 
-  def test_set_interval
-    $opts.parse(%w(-i 10))
-    assert_equal(10, $opts.interval)
-    $opts.parse(%w(--interval 15))
-    assert_equal(15, $opts.interval)
+  def test_set_minimum
+    $opts.parse(%w(-m 10))
+    assert_equal(10, $opts.minimum)
+    $opts.parse(%w(--minimum 15))
+    assert_equal(15, $opts.minimum)
+  end
+
+  def test_set_maximum
+    $opts.parse(%w(-M 10))
+    assert_equal(10, $opts.maximum)
+    $opts.parse(%w(--maximum 15))
+    assert_equal(15, $opts.maximum)
   end
 
   def test_set_alert
