@@ -3,15 +3,22 @@ require 'ostruct'
 require 'singleton'
 
 module DNSOMatic
+  # A class to handle option parsing for the dnsomatic client.
+  # It acts as a singleton and will recreate its internal representation
+  # of the options each time parse(ARGS) is called.
   class Opts
     @@opts = OpenStruct.new
 
     include Singleton
 
+    # No arguments, but sets the internal options to the defaults.
     def initialize
       setdefaults()
     end
 
+    # Parse and array of arguments and set the interal options.  Typically
+    # ARGV is passed, but that is not required.  Any array of strings that
+    # look like arguments will work (makes testing easier).
     def parse(args)
       setdefaults()
       begin
@@ -79,11 +86,15 @@ module DNSOMatic
       end
     end
 
+    # This is a simple wrapper that passes method calls to our internal option
+    # store (an openstruct) so that a client can call opts.alert and get the
+    # value from the @@opts.alert variable.
     def method_missing(meth, *args)
       @@opts.send(meth)
     end
 
     private
+    # A quick way to set all of our preferred defaults
     def setdefaults
       @@opts.name = nil
       @@opts.cf = nil

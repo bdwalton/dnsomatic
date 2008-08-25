@@ -1,6 +1,9 @@
 require 'net/https'
 
 module DNSOMatic
+  # A class to handle 'parsing' the configuration files and setting defaults
+  # as required.  Config files are actually YAML files, so the parsing is
+  # offloaded for the most part.
   class Config
     #in most cases, a user can simply set username and password in a defaults:
     #stanza and fire the client.
@@ -11,6 +14,10 @@ module DNSOMatic
 		   'offline' => 'NOCHG',
 		   'webipfetchurl' => 'http://myip.dnsomatic.com/' }
 
+    # Create a new instance with the option of specifying an alternate config
+    # file to read.  The default config file is either $HOME/.dnsomatic.cf (on
+    # unix or if Windows specifies a $HOME environment variable) or
+    # %APPDATA%/.dnsomatic.cf for most Windows environments.
     def initialize(conffile = nil)
       stdcf = File.join(ENV['HOME'] || ENV['APPDATA'], '.dnsomatic.cf')
       if conffile
@@ -41,10 +48,17 @@ module DNSOMatic
       load()
     end
 
+    # Provide a view of the configuration file after merging defaults.  This
+    # is returned as a YAML string, suitable for redirecting right into a
+    # config file.  Optionally, the return value can be 'pruned' to show only
+    # one host update stanza by passing in the desired name as a string.
     def merged_config(prune_to = nil)
       prune_to.nil? ? @config.to_yaml : one_key(@config, prune_to).to_yaml
     end
 
+    # Return a list of Updater objects.  Each host update stanza is turned into
+    # an individual object.  This may be pruned to a single Updater by passing
+    # in the name of the stanza title.
     def updaters(prune_to = nil)
       #don't create updater objects until they're actually requested.
       #(saves a little overhead if just displaying the config)
