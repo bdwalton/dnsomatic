@@ -96,7 +96,7 @@ module DNSOMatic
       fn = 'dnsomatic-' + Process.uid.to_s + '.cache'
       @cache_file = File.join(ENV['TEMP'] || '/tmp', fn)
 
-      @cache = Hash.new { |hash,key| hash[key] = IPStatus.new(key) }
+      @cache = Hash.new
       @persist = true
     end
 
@@ -122,7 +122,7 @@ module DNSOMatic
       #because an access for a key that doesn't exist returns and inserts
       #a new IPStatus object, we don't differntiate between seen and unseen
       #here.
-      @cache[url].update
+      (@cache[url] ||= IPStatus.new(url)).update
 
       save()  #ensure that we get spooled to disk.
       @cache[url]
