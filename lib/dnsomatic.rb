@@ -1,13 +1,13 @@
 require 'yaml'
 require 'open-uri'
 
-# dnsomatic is a client updater for the DNS-o-Matic dynamic dns update service.
+# dnsomatic is a client for the DNS-o-Matic dynamic dns update service.
 #
 # To view program options, run with the -h or --help option.
 #
 # Author:: Ben Walton (mailto: bdwalton@gmail.com)
 # Copyright:: Copyright(c) 2008 Ben Walton
-# License:: GPL (http://www.gnu.org/copyleft/gpl.html)
+# License:: GNU General Public License (GPL) version 3
 #
 # By default, dnsomatic tries to avoid polling or updating its address too
 # often.  It will not check a remote IP lookup url more often than every half
@@ -88,7 +88,7 @@ require 'open-uri'
 #		_other_ = disable
 
 module DNSOMatic
-  VERSION = 0.1
+  VERSION = 0.1.0
   USERAGENT = "Ruby_DNS-o-Matic/#{VERSION}"
 
   # We provide our easily distinguishable exception class so that we can easily
