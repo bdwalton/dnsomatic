@@ -1,18 +1,22 @@
 require 'yaml'
 require 'open-uri'
 
-# dnsomatic is a client for the DNS-o-Matic dynamic dns update service.
+# :title: dnsomatic - a DNS-o-Matic update client
 #
-# To view program options, run with the -h or --help option.
+# = dnsomatic - a DNS-o-Matic update client
 #
 # Author:: Ben Walton (mailto: bdwalton@gmail.com)
-# Copyright:: Copyright(c) 2008 Ben Walton
+# Copyright:: Copyright (c) 2008 Ben Walton
 # License:: GNU General Public License (GPL) version 3
+#
+# = Summary
 #
 # By default, dnsomatic tries to avoid polling or updating its address too
 # often.  It will not check a remote IP lookup url more often than every half
 # hour.  It will avoid updating DNS-o-Matic for up to 15 days if the IP
 # detected hasn't changed.
+#
+# = Configuration
 #
 # Configuration is specified by a small YAML file with a default location
 # of $HOME/.dnsomatic.cf
@@ -66,29 +70,43 @@ require 'open-uri'
 #
 # A complete list of options that may be specified in the defaults: or a named
 # update definition are:
-# * username: your dnsomatic username
-# * password: your dnsomatic password
-# * mx:	      a hostname that will handle mail delivery for this host.  it must
-#		resolve to an IP or DNS-o-Matic will ignore it.
-# * backmx:   a lower priority mx record.  sames rules as mx.  you may also
-#		list these as NOCHG, which tells DNS-o-Matic to leave them as
-#		is.
-# * hostname: the hostname to update.  the defaults specify this as
+# * username - your dnsomatic username
+# * password - your dnsomatic password
+# * mx - a hostname that will handle mail delivery for this host.  it must
+#   resolve to an IP or DNS-o-Matic will ignore it.
+# * backmx - a lower priority mx record.  sames rules as mx.  you may also list
+#		these as NOCHG, which tells DNS-o-Matic to leave them as is.
+# * hostname - the hostname to update.  the defaults specify this as
 #		all.dnsomatic.com, which tells dnsomatic to update all listed
 #		records with the same values.
-# * wildcard: indicates whether foo.hostname and bar.hostname and baz.hostname
-#		should also resolve to the same IP as hostname.
-#		ON = enable
-#		NOCHG = leave it as is
-#		_other_ = disable
-# * offline:  sets the hostname of offline mode, which may do some redirection
+# * wildcard - indicates whether foo.hostname and bar.hostname and baz.hostname should also resolve to the same IP as hostname.
+#		- ON = enable
+#		- NOCHG = leave it as is
+#		- _other_ = disable
+# * offline - sets the hostname of offline mode, which may do some redirection
 #		things depending on the service being updated.
-#		YES = enable
-#		NOCHG = leave it as is
-#		_other_ = disable
+#		- YES = enable
+#		- NOCHG = leave it as is
+#		- _other_ = disable
+#
+# = Usage
+#
+# Usage: dnsomatic [options]
+#   -m, --minimum SEC                The minimum time between updates (def: 30m)
+#   -M, --maximum SEC                The maximum time between updates (def: 15d)
+#   -a, --alert                      Emit an alert if the IP is updated
+#   -n, --name NAME                  Only update host stanza NAME
+#   -d, --display-config             Display the configuration and exit
+#   -c, --config FILE                Use an alternate config file
+#   -f, --force                      Force an update, even if IP is unchanged
+#   -p, --print                      Output the update URLs.  No action taken
+#   -v, --verbose                    Display runtime messages
+#   -V, --version                    Display version and exit
+#   -x, --debug                      Output additional info in error situations
+#   -h, --help                       Display this help text
 
 module DNSOMatic
-  VERSION = 0.1.0
+  VERSION = '0.1.0'
   USERAGENT = "Ruby_DNS-o-Matic/#{VERSION}"
 
   # We provide our easily distinguishable exception class so that we can easily
