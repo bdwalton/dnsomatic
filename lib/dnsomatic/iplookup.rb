@@ -96,7 +96,7 @@ module DNSOMatic
       fn = 'dnsomatic-' + Process.uid.to_s + '.cache'
       @cache_file = File.join(ENV['TEMP'] || '/tmp', fn)
 
-      @cache = {}
+      @cache = Hash.new { |hash,key| hash[key] = IPStatus.new(key) }
       @persist = true
     end
 
@@ -119,12 +119,10 @@ module DNSOMatic
       #implement a simple cache to prevent making multiple http requests
       #to the same remote agent (in the case where a user defines multiple
       #updater stanzas that use the same ip fetch url).
-      if @cache[url]
-	@cache[url].update
-      #force updates to happen if no change in Xsec
-      else  #unknown
-	@cache[url] = IPStatus.new(url)
-      end
+      #because an access for a key that doesn't exist returns and inserts
+      #a new IPStatus object, we don't differntiate between seen and unseen
+      #here.
+      @cache[url].update
 
       save()  #ensure that we get spooled to disk.
       @cache[url]
