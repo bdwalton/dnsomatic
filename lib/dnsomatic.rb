@@ -1,6 +1,6 @@
 require 'yaml'
 require 'open-uri'
-#
+
 # dnsomatic is a client updater for the DNS-o-Matic dynamic dns update service.
 #
 # To view program options, run with the -h or --help option.
@@ -91,7 +91,9 @@ module DNSOMatic
   VERSION = 0.1
   USERAGENT = "Ruby_DNS-o-Matic/#{VERSION}"
 
-  class Error < Exception; end #just for a unique name, more than anything else.
+  # We provide our easily distinguishable exception class so that we can easily
+  # differntiate our errors from others.
+  class Error < Exception; end
 
   def self.http_fetch (url)
     uri = URI.parse(url)
