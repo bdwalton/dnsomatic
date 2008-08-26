@@ -106,7 +106,7 @@ require 'open-uri'
 #   -h, --help                       Display this help text
 
 module DNSOMatic
-  VERSION = '0.1.0'
+  VERSION = '0.1.1'
   USERAGENT = "Ruby_DNS-o-Matic/#{VERSION}"
 
   # We provide our easily distinguishable exception class so that we can easily
