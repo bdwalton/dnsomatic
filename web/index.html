@@ -10,6 +10,7 @@
     <p>You are free to use or modify dnsomatic under the terms of the
     GPLv3.</p>
 
+    <h2>Use and Configuration</h2>
     <p>To use it, you must have a valid account at <a
     href="http://dnsomatic.com">DNS-o-Matic</a>.  This account should be
     associated with one or more dynamic dns services (zoneedit, dyndns, etc).
@@ -25,9 +26,11 @@
 	password: &lt;YOUR_DNSOMATIC_PASSWORD&gt;
     </pre>
 
-    <p>With that configuration in place, you can run $PATH_TO_GEM_BIN/dnsomatic
-    -a, which will run an update an emit a message if successful.  By default,
-    no output is made unless there is an error condition.</p>
+    <p>On *nix hosts, the default configuration file is $HOME/.dnsomatic.cf.
+    On Windows, the file should be %APPDATA%/.dnsomatic.cf.</p> <p>With that
+    configuration in place, you can run $PATH_TO_GEM_BIN/dnsomatic -a, which
+    will run an update an emit a message if successful.  By default, no output
+    is made unless there is an error condition.</p>
 
     <p>To see all program options, run dnsomatic with -h or --help.</p>
 
