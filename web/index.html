@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <title>dnsomatic - a dns-o-matic update client</title>
+  </head>
+  <body>
+    <h2>dnsomatic</h2>
+    <p>dnsomatic is a tool that can be used to keep your IP in sync with
+    multiple dynamic dns services by making a single update request.</p>
+
+    <p>To use it, you must have a valid account at <a
+    href="http://dnsomatic.com">DNS-o-Matic</a>.  This account should be
+    associated with one or more dynamic dns services (zoneedit, dyndns, etc).
+    The author uses both of those listed.</p>
+
+    <p>Before your first use, you must create at least a basic configuration
+    file.  For most people, this will consist of nothing more than the
+    following:</p>
+
+    <pre>
+      defaults:
+	username: &lt;YOUR_DNSOMATIC_USERNAME&gt;
+	password: &lt;YOUR_DNSOMATIC_PASSWORD&gt;
+    </pre>
+
+    <p>With that configuration in place, you can run $PATH_TO_GEM_BIN/dnsomatic
+    -a, which will run an update an emit a message if successful.  By default,
+    no output is made unless there is an error condition.</p>
+
+    <p>To see all program options, run dnsomatic with -h or --help.</p>
+
+    <h2>Downloads</h2>
+
+    <p>You may download the gem for dnsomatic at the <a href="http://rubyforge.org/projects/dnsomatic">Rubyforge Project Page</a>.</p>
+
+    <h2>Todo</h2>
+    <p>There is still much to be done with this project, mostly in terms of
+    code cleanup, unit testing and error handling.  For a list of outstanding
+    items, see the <a
+    href="http://rubyforge.org/pm/task.php?group_project_id=12114&group_id=6888&func=browse">todo
+    tracker</a> at Rubyforge.</p>
+
+    <h2>Author</h2>
+    <p>dnsomatic was brought to you by Ben Walton.</p>
+  </body>
+</html>
