@@ -123,7 +123,11 @@ module DNSOMatic
       #because an access for a key that doesn't exist returns and inserts
       #a new IPStatus object, we don't differntiate between seen and unseen
       #here.
-      (@cache[url] ||= IPStatus.new(url)).update
+      if @cache[url]
+	@cache[url].update
+      else
+	@cache[url] = IPStatus.new(url)
+      end
 
       save()  #ensure that we get spooled to disk.
       @cache[url]
