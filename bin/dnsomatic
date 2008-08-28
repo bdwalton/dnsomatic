@@ -49,7 +49,7 @@ rescue Exception => e
     msg += "Backtrace:\n"
     msg += e.backtrace.to_s
   else
-    msg =+ "If you want to see where this error was generated, use -x"
+    msg += "If you want to see where this error was generated, use -x"
   end
   DNSOMatic::Logger.warn(msg)
   exit 1
