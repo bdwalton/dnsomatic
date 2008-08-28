@@ -9,9 +9,9 @@ module DNSOMatic
       $stdout.puts msg if @@opts.verbose
     end
 
-    # Output a message to stderr regardless of verbose command line option.
+    # Output a message to regardless of verbose command line option.
     def self.warn(msg)
-      $stderr.puts msg
+      $stdout.puts msg
     end
   
     # Output a message to stdout if either verbose or alert was specified.

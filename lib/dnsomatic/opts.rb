@@ -62,7 +62,7 @@ module DNSOMatic
 	  end
 
 	  o.on('-V', '--version', 'Display version and exit') do
-	    $stdout.puts DNSOMatic::VERSION
+	    DNSOMatic::Logger.warn(DNSOMatic::VERSION)
 	    exit 0
 	  end
 
