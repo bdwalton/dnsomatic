@@ -70,7 +70,10 @@ module DNSOMatic
 	    @@opts.debug = true
 	  end
 
-	  o.on('-h', '--help', 'Display this help text') { puts o; exit; }
+	  o.on('-h', '--help', 'Display this help text') do
+	    DNSOMatic::Logger.warn(o)
+	    exit
+	  end
 	end
 	opts.parse!(args)
 
