@@ -11,6 +11,7 @@ module DNSOMatic
     UNCHANGED = false
 
     attr_reader :ip
+    @@opts = Opts.instance
 
     # A URL must be provided that returns the IP of the system that requests
     # the URL.  A commonly used example is http://www.whatismyip.org
@@ -52,7 +53,7 @@ module DNSOMatic
 
     private
     def min_elapsed?
-      if Time.now - @last_update <= $opts.minimum
+      if Time.now - @last_update <= @@opts.minimum
 	Logger::log("Minimum lookup interval not expired.")
 	true
       else
@@ -61,7 +62,7 @@ module DNSOMatic
     end
 
     def max_elapsed?
-      if Time.now - @last_update >= $opts.maximum
+      if Time.now - @last_update >= @@opts.maximum
 	Logger::log("Maximum interval between updates has elapsed.  Update will be forced.")
 	true
       else

@@ -9,35 +9,35 @@ rescue LoadError => e
 end
 
 begin
-  $opts = DNSOMatic::Opts.instance
-  $opts.parse(ARGV)
+  opts = DNSOMatic::Opts.instance
+  opts.parse(ARGV)
 
   c = DNSOMatic::Config.new($opts.cf)
 
-  if $opts.showcf
+  if opts.showcf
     $stdout.puts "This is your configuration after merging in the defaults."
-    $stdout.puts "It has been pruned to only display the stanza named: #{$opts.name}" if $opts.name
-    $stdout.puts c.merged_config($opts.name)
+    $stdout.puts "It has been pruned to only display the stanza named: #{opts.name}" if opts.name
+    $stdout.puts c.merged_config(opts.name)
     exit
   end
 
-  if $opts.stanza and $opts.verbose
-    $stdout.puts "Will only update #{$opts.name}."
+  if opts.stanza and opts.verbose
+    $stdout.puts "Will only update #{opts.name}."
   end
 
-  updaters = c.updaters($opts.name)
+  updaters = c.updaters(opts.name)
 
   updaters.each_pair do |name, obj|
-    $stdout.puts "Working with host update definition: #{name}" if $opts.verbose
-    if $opts.print
+    $stdout.puts "Working with host update definition: #{name}" if opts.verbose
+    if opts.print
       puts obj
     else
-      obj.send( $opts.force ? 'update!' : 'update')
+      obj.send( opts.force ? 'update!' : 'update')
     end
   end
 rescue DNSOMatic::Error => e
   $stderr.puts e
-  if $opts.debug
+  if opts.debug
     $stderr.puts "Backtrace:"
     $stderr.puts e.backtrace
   end
@@ -45,7 +45,7 @@ rescue => e
   $stderr.puts "Rescued an unhandled exception of type: #{e.class}"
   $stderr.puts "The exception contains the following message:"
   $stderr.puts e.message
-  if $opts.debug
+  if opts.debug
     $stderr.puts "Backtrace:"
     $stderr.puts e.backtrace
   end
