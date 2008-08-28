@@ -3,7 +3,8 @@
 begin
   require 'dnsomatic'
 rescue LoadError => e
-  # a small hack in the case where we aren't a gem
+  $stderr.puts "Using fallback lib path trick..."
+  # a small hack in the case we aren't a gem
   $: << File.join(File.dirname($0), '..', 'lib')
   retry
 end
@@ -12,7 +13,7 @@ begin
   opts = DNSOMatic::Opts.instance
   opts.parse(ARGV)
 
-  c = DNSOMatic::Config.new($opts.cf)
+  c = DNSOMatic::Config.new(opts.cf)
 
   if opts.showcf
     msg = "This is your configuration after merging in the defaults.\n"
@@ -34,22 +35,22 @@ begin
       obj.send( opts.force ? 'update!' : 'update')
     end
   end
-rescue => e
+rescue Exception => e
   if e.kind_of?(DNSOMatic::Error)
     msg = e
   else
     msg = "Rescued an unhandled exception of type: #{e.class}\n"
   end
 
-  msg += "The exception contains the following message:"
+  msg += "The exception contains the following message:\n"
   msg += e.message
 
   if opts.debug
-    msg += "Backtrace:"
-    msg += e.backtrace
+    msg += "Backtrace:\n"
+    msg += e.backtrace.to_s
   else
     msg =+ "If you want to see where this error was generated, use -x"
   end
-  DNSOMatic::warn(msg)
+  DNSOMatic::Logger.warn(msg)
   exit 1
 end
