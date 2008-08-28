@@ -63,7 +63,7 @@ module DNSOMatic
 
 	  o.on('-V', '--version', 'Display version and exit') do
 	    DNSOMatic::Logger.warn(DNSOMatic::VERSION)
-	    exit 0
+	    exit
 	  end
 
 	  o.on('-x', '--debug', 'Output additional info in error situations') do

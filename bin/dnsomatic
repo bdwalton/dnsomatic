@@ -3,7 +3,6 @@
 begin
   require 'dnsomatic'
 rescue LoadError => e
-  $stderr.puts "Using fallback lib path trick..."
   # a small hack in the case we aren't a gem
   $: << File.join(File.dirname($0), '..', 'lib')
   retry
@@ -35,7 +34,7 @@ begin
       obj.send( opts.force ? 'update!' : 'update')
     end
   end
-rescue Exception => e
+rescue => e
   if e.kind_of?(DNSOMatic::Error)
     msg = e
   else
