@@ -54,7 +54,7 @@ module DNSOMatic
     private
     def min_elapsed?
       if Time.now - @last_update <= @@opts.minimum
-	Logger::log("Minimum lookup interval not expired.")
+	Logger::log("Minimum lookup interval (#{@@opts.minimum}s) not expired.")
 	true
       else
 	false
@@ -63,7 +63,7 @@ module DNSOMatic
 
     def max_elapsed?
       if Time.now - @last_update >= @@opts.maximum
-	Logger::log("Maximum interval between updates has elapsed.  Update will be forced.")
+	Logger::log("Maximum update interval (#{@@opts.maximum}s) has elapsed.  Update will be forced.")
 	true
       else
 	false
