@@ -9,6 +9,7 @@ require 'dnsomatic'
 class TestUpdater < Test::Unit::TestCase
   def setup
     $opts = DNSOMatic::Opts.instance
+    $opts.parse([]) #just to override any values setup by previous tests
     $fp = File.join('/tmp', 'dnsomatic.testcache-' + Process.pid.to_s)
     $iplookup = DNSOMatic::IPLookup.instance
     $iplookup.setcachefile($fp)

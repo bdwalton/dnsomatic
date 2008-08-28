@@ -74,5 +74,4 @@ class TestOpts < Test::Unit::TestCase
   def test_extra_args_raise_exception
     assert_raise(DNSOMatic::Error) { $opts.parse(%w(somearg)) }
   end
-
 end
