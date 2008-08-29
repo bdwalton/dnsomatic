@@ -24,7 +24,7 @@ module DNSOMatic
 	if File.exists?(conffile)
 	  @cf = conffile
 	else
-	  raise(DNSOMatic::ConfErr, "Invalid config file: #{conffile}")
+	  raise(DNSOMatic::Error, "Invalid config file: #{conffile}")
 	end
       elsif File.exists?(stdcf)
 	@cf = stdcf
