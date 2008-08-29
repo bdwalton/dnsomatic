@@ -1,0 +1,10 @@
+defaults:
+  username: myuser
+  password: mypass
+stanza1:
+  hostname: foo.bar.baz
+stanza2:
+  webipfetchurl: http://somesite.com/whatismyip.php
+stanza2:
+  hostname: baz.bar.foo
+  mx: foo.bar.baz
