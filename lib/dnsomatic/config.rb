@@ -89,7 +89,7 @@ module DNSOMatic
       return @@defaults if @cf.nil?
 
       conf = DNSOMatic::yaml_read(@cf)
-      raise DNSOMatic::ConfErr, "Invalid configuration format in #{@cf}" unless conf.kind_of?(Hash)
+      raise DNSOMatic::Error, "Invalid configuration format in #{@cf}" unless conf.kind_of?(Hash)
 
       if conf.has_key?('defaults')
 	#allow the user to override our built-in defaults
@@ -106,7 +106,7 @@ module DNSOMatic
 	  if !stanza.has_key?(required) or stanza[required].nil?
 	    msg = "Invalid configuration for Host Updater named '#{token}'\n"
 	    msg += "Please define the field: #{required}."
-	    raise DNSOMatic::ConfErr, msg
+	    raise DNSOMatic::Error, msg
 	  end
 	end
 
