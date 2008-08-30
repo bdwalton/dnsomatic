@@ -34,16 +34,14 @@ module DNSOMatic
 	@cf = nil
       end
 
+      raise(DNSOMatic::Error, 'No config file available.  Try creating #{stdcf}.') unless @cf
+
       @updaters = nil
       @config = {}
 
       # the user config must supply values for these, either in a specific
       # host updater stanza or by overriding the global default in defaults:
       @req_conf = %w(username password)
-
-      msg = @cf.nil? ?  "Couldn't find a user config.  Using defaults only." : \
-	  "Using config file #{@cf}"
-      Logger::log(msg)
 
       load()
     end
