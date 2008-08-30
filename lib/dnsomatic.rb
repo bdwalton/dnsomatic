@@ -127,7 +127,7 @@ module DNSOMatic
     rescue OpenURI::HTTPError, SocketError => e
       msg = "Error communicating with #{uri.host}\n"
       msg += "Message was: #{e.message}\n"
-      msg += "Full URL being requested: #{uri}"
+      msg += "Full URL being requested: #{uri}\n"
       raise(DNSOMatic::Error, msg)
     end
   end

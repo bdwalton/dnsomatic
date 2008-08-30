@@ -34,15 +34,14 @@ begin
       obj.send( opts.force ? 'update!' : 'update')
     end
   end
-rescue => e
+rescue Exception => e
   if e.kind_of?(DNSOMatic::Error)
-    msg = e
+    msg = e.message
   else
     msg = "Rescued an unhandled exception of type: #{e.class}\n"
+    msg += e.message + "\n"
   end
 
-  msg += "The exception contains the following message:\n"
-  msg += e.message
 
   if opts.debug
     msg += "Backtrace:\n"

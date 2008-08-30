@@ -84,7 +84,7 @@ module DNSOMatic
       rescue OptionParser::ParseError => e
 	msg = "Extra/Unknown arguments used:\n"
 	msg += "\t#{e.message}\n"
-	msg += "Remaining args: #{args.join(', ')}" if args.size > 0
+	msg += "Remaining args: #{args.join(', ')}\n" if args.size > 0
 	raise(DNSOMatic::Error, msg)
       end
     end
