@@ -16,7 +16,7 @@ class TestConfig < Test::Unit::TestCase
     assert_nothing_raised { DNSOMatic::Config.new }
   end
 
-  def test_exception_on_no_config_file
+  def test_exception_on_no_default_config_file
     ENV['HOME'] = '/tmp'
     assert_raises(DNSOMatic::Error) { DNSOMatic::Config.new }
   end
@@ -48,7 +48,7 @@ class TestConfig < Test::Unit::TestCase
   end
 
   def test_3_stanzas_no_def_no_u_p_raises
-    conf = File.join($cfd, '3_good_stanzas_no_def.cf')
+    conf = File.join($cfd, '3_stanzas_no_def_no_u_p.cf')
     assert_raises(DNSOMatic::Error) { DNSOMatic::Config.new(conf) }
   end
 
