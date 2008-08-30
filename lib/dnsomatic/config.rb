@@ -5,15 +5,6 @@ module DNSOMatic
   # as required.  Config files are actually YAML files, so the parsing is
   # offloaded for the most part.
   class Config
-    #in most cases, a user can simply set username and password in a defaults:
-    #stanza and fire the client.
-    @@defaults = { 'hostname' => 'all.dnsomatic.com',
-		   'wildcard' => 'NOCHG',
-		   'mx' => 'NOCHG',
-		   'backmx' => 'NOCHG',
-		   'offline' => 'NOCHG',
-		   'webipfetchurl' => 'http://myip.dnsomatic.com/' }
-
     # Create a new instance with the option of specifying an alternate config
     # file to read.  The default config file is either $HOME/.dnsomatic.cf (on
     # unix or if Windows specifies a $HOME environment variable) or
@@ -25,6 +16,15 @@ module DNSOMatic
 
       @updaters = nil
       @config = {}
+
+      #in most cases, a user can simply set username and password in a defaults:
+      #stanza and fire the client.
+      @defaults = { 'hostname' => 'all.dnsomatic.com',
+		    'wildcard' => 'NOCHG',
+		    'mx' => 'NOCHG',
+		    'backmx' => 'NOCHG',
+		    'offline' => 'NOCHG',
+		    'webipfetchurl' => 'http://myip.dnsomatic.com/' }
 
       # the user config must supply values for these, either in a specific
       # host updater stanza or by overriding the global default in defaults:
@@ -76,14 +76,14 @@ module DNSOMatic
 
       if conf.has_key?('defaults')
 	#allow the user to override our built-in defaults
-	@@defaults.merge!(conf['defaults'])
+	@defaults.merge!(conf['defaults'])
 	#if they've provided only the defaults stanza, we'll use it to perform
-	#the update, otherwise remove it as it has been folded into @@defaults
+	#the update, otherwise remove it as it has been folded into @defaults
 	conf.delete('defaults') if conf.keys.size > 1
       end
 
       conf.each_key do |token|
-	stanza = @@defaults.merge(conf[token])
+	stanza = @defaults.merge(conf[token])
 	@req_conf.each do |required|
 	  #still test for existence in case the defaults get munged.
 	  if !stanza.has_key?(required) or stanza[required].nil?
