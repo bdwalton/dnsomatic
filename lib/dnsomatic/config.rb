@@ -11,7 +11,7 @@ module DNSOMatic
     # %APPDATA%/.dnsomatic.cf for most Windows environments.
     def initialize(conffile = nil)
       stdcf = File.join(ENV['HOME'] || ENV['APPDATA'], '.dnsomatic.cf')
-      @cf = confile.nil? stdcf : conffile
+      @cf = conffile.nil? ? stdcf : conffile
       raise(DNSOMatic::Error, "Invalid config file: #{conffile}") unless  File.exists?(@cf)
 
       @updaters = nil
