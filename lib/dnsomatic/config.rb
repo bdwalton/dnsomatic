@@ -84,8 +84,6 @@ module DNSOMatic
     end
 
     def load
-      return @@defaults if @cf.nil?
-
       conf = DNSOMatic::yaml_read(@cf)
       raise DNSOMatic::Error, "Invalid configuration format in #{@cf}" unless conf.kind_of?(Hash)
 
