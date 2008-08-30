@@ -54,7 +54,7 @@ class TestConfig < Test::Unit::TestCase
 
   def test_no_defs_no_u_p_raises
     conf = File.join($cfd, '1_stanza_no_defs_no_u_p.cf')
-    assert_raises(DNSOMatic::Error) { DNSOMatic::Config.new(conf) }
+    assert_raises(DNSOMatic::Error) { c = DNSOMatic::Config.new(conf); puts c.merged_config }
   end
 
   def teardown
