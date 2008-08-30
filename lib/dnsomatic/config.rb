@@ -101,7 +101,7 @@ module DNSOMatic
 	  #still test for existence in case the defaults get munged.
 	  if !stanza.has_key?(required) or stanza[required].nil?
 	    msg = "Invalid configuration for Host Updater named '#{token}'\n"
-	    msg += "Please define the field: #{required}."
+	    msg += "Please define the field: #{required}.\n"
 	    raise(DNSOMatic::Error, msg)
 	  end
 	end
