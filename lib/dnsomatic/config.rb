@@ -78,38 +78,46 @@ module DNSOMatic
 	conf.delete('defaults') if conf.keys.size > 1
       end
 
-      conf.each_key do |token|
-	stanza = @defaults.merge(conf[token])
-	%w(username password).each do |required|
-	  #still test for existence in case the defaults get munged.
-	  if !stanza.has_key?(required) or stanza[required].nil?
-	    msg = "Invalid configuration for Host Updater named '#{token}'\n"
-	    msg += "Please define the field: #{required}.\n"
-	    raise(DNSOMatic::Error, msg)
-	  end
-	end
-
-	%w(mx backmx).each do |mxtype|
-	  mxval = stanza[mxtype]
-	  next if mxval.eql?('NOCHG')
-
-	  begin
-	    ip = Resolv.getaddress(mxval)
-	  rescue Resolv::ResolvError => e
-	    msg = "Invalid value for #{mxtype}.\n"
-	    msg += "It must be either NOCHG or a valid hostname.\n"
-	    msg += e.message + "\n"
-	    raise(DNSOMatic::Error, msg)
-	  end
-	end
+      conf.each_key do |name|
+	stanza = @defaults.merge(conf[name])
 
 	#just in case
 	stanza.each_pair do |k,v|
 	  stanza[k] = fmt(v)
 	end
 
+	validate(name, stanza)
+
 	#save our merged version in case we're just dump our config to stdout
-	@config[token] = stanza
+	@config[name] = stanza
+      end
+    end
+
+    def validate(name, stanza)
+      #first, ensure we have the _required_ fields in an update def stanza
+      %w(username password).each do |required|
+	#still test for existence in case the defaults get munged.
+	if !stanza.has_key?(required) or stanza[required].nil?
+	  msg = "Invalid configuration for Host Updater named '#{name}'\n"
+	  msg += "Please define the field: #{required}.\n"
+	  raise(DNSOMatic::Error, msg)
+	end
+      end
+
+      #the dnsomatic api spec indicates that mx/back mx can be either NOCHG
+      #or a hostname that must resolve to an IP.
+      %w(mx backmx).each do |mxtype|
+	mxval = stanza[mxtype]
+	next if mxval.eql?('NOCHG')
+
+	begin
+	  Resolv.getaddress(mxval)
+	rescue Resolv::ResolvError => e
+	  msg = "Invalid value for #{mxtype}.\n"
+	  msg += "It must be either NOCHG or a valid hostname.\n"
+	  msg += e.message + "\n"
+	  raise(DNSOMatic::Error, msg)
+	end
       end
     end
 
