@@ -69,7 +69,7 @@ class TestConfig < Test::Unit::TestCase
     conf = File.join($cfd, 'defs_with_mx_set.cf')
     assert_nothing_raised { DNSOMatic::Config.new(conf) }
     conf = File.join($cfd, 'defs_with_bad_mx_set.cf')
-    assert_raises(DNSOMatic::Config) { DNSOMatic::Config.new(conf) }
+    assert_raises(DNSOMatic::Error) { DNSOMatic::Config.new(conf) }
   end
 
   def teardown

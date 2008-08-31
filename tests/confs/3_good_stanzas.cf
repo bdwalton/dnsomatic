@@ -7,4 +7,3 @@ stanza2:
   webipfetchurl: http://somesite.com/whatismyip.php
 stanza3:
   hostname: baz.bar.foo
-  mx: foo.bar.baz
