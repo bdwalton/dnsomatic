@@ -1,4 +1,3 @@
-require 'net/https'
 require 'resolv'
 
 module DNSOMatic
