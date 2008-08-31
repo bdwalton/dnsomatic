@@ -1,0 +1,4 @@
+defaults:
+  username: blah
+  password: blah
+  mx: blah.example.com

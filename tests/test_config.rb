@@ -2,7 +2,6 @@
 $: << '../lib'
 
 require 'test/unit'
-require 'stringio'
 
 require 'dnsomatic'
 
@@ -54,7 +53,23 @@ class TestConfig < Test::Unit::TestCase
 
   def test_no_defs_no_u_p_raises
     conf = File.join($cfd, '1_stanza_no_defs_no_u_p.cf')
-    assert_raises(DNSOMatic::Error) { c = DNSOMatic::Config.new(conf); puts c.merged_config }
+    assert_raises(DNSOMatic::Error) { DNSOMatic::Config.new(conf) }
+  end
+
+  def test_override_webipfetchurl_works
+    conf = File.join($cfd, 'defs_with_override_ipfetch.cf')
+    c = DNSOMatic::Config.new(conf)
+    #so we know our match below isn't hitting on another stanza
+    assert_equal(1, c.updaters.length)
+    assert_match(/.*webipfetchurl: http:\/\/example.com.*/m, c.merged_config)
+  end
+
+  def test_mx_rejects_improper_values
+    #either NOCHG or a name that resolves to an IP
+    conf = File.join($cfd, 'defs_with_mx_set.cf')
+    assert_nothing_raised { DNSOMatic::Config.new(conf) }
+    conf = File.join($cfd, 'defs_with_bad_mx_set.cf')
+    assert_raises(DNSOMatic::Config) { DNSOMatic::Config.new(conf) }
   end
 
   def teardown

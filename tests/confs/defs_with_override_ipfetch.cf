@@ -1,0 +1,4 @@
+stanza1:
+  username: foo
+  password: bar
+  webipfetchurl: http://example.com
