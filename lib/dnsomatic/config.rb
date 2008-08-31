@@ -154,7 +154,6 @@ module DNSOMatic
 
   class Validators
     def self.host(field, val)
-      $stderr.puts "Validating #{field} with #{val} using Validators.host"
       return true if val.eql?('NOCHG')
       return true if val.match(/[^\s]+\.[^\s]+/)  #no great, but workable
       msg = "Invalid hostname defined for #{field}.\n"
@@ -163,7 +162,6 @@ module DNSOMatic
     end
 
     def self.yes_nochg(field, val)
-      $stderr.puts "Validating #{field} with #{val} using Validators.yes_nochg"
       valid = %w(YES NO NOCHG)
       return true if valid.include?(val.upcase)
       msg = "Invalid value for #{field}.\n"
@@ -173,7 +171,6 @@ module DNSOMatic
     end
 
     def self.on_nochg(field, val)
-      $stderr.puts "Validating #{field} with #{val} using Validators.on_nochg"
       valid = %w(ON OFF NOCHG)
       return true if valid.include?(val.upcase)
       msg = "Invalid value for #{field}.\n"
@@ -183,7 +180,6 @@ module DNSOMatic
     end
 
     def self.url(field, val)
-      $stderr.puts "Validating #{field} with #{val} using Validators.url"
       return true if val.match('http.//.*')
       msg = "Invalid value for #{field}.\n"
       msg += "It should be on http(s)-style URL.\n"
