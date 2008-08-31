@@ -34,6 +34,9 @@ begin
       obj.send( opts.force ? 'update!' : 'update')
     end
   end
+rescue SystemExit => e
+  # we call this in a few places (mainly from option processing [-h, -V])
+  # a no-op for us.
 rescue Exception => e
   if e.kind_of?(DNSOMatic::Error)
     msg = e.message
