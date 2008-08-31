@@ -1,4 +1,5 @@
 require 'net/https'
+require 'resolv'
 
 module DNSOMatic
   # A class to handle 'parsing' the configuration files and setting defaults
@@ -25,10 +26,6 @@ module DNSOMatic
 		    'backmx' => 'NOCHG',
 		    'offline' => 'NOCHG',
 		    'webipfetchurl' => 'http://myip.dnsomatic.com/' }
-
-      # the user config must supply values for these, either in a specific
-      # host updater stanza or by overriding the global default in defaults:
-      @req_conf = %w(username password)
 
       load()
     end
@@ -84,11 +81,25 @@ module DNSOMatic
 
       conf.each_key do |token|
 	stanza = @defaults.merge(conf[token])
-	@req_conf.each do |required|
+	%w(username password).each do |required|
 	  #still test for existence in case the defaults get munged.
 	  if !stanza.has_key?(required) or stanza[required].nil?
 	    msg = "Invalid configuration for Host Updater named '#{token}'\n"
 	    msg += "Please define the field: #{required}.\n"
+	    raise(DNSOMatic::Error, msg)
+	  end
+	end
+
+	%w(mx backmx).each do |mxtype|
+	  mxval = stanza[mxtype]
+	  next if mxval.eql?('NOCHG')
+
+	  begin
+	    ip = Resolv.getaddress(mxval)
+	  rescue Resolv::ResolvError => e
+	    msg = "Invalid value for #{mxtype}.\n"
+	    msg += "It must be either NOCHG or a valid hostname.\n"
+	    msg += e.message + "\n"
 	    raise(DNSOMatic::Error, msg)
 	  end
 	end
