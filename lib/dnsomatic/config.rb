@@ -26,6 +26,13 @@ module DNSOMatic
 		    'offline' => 'NOCHG',
 		    'webipfetchurl' => 'http://myip.dnsomatic.com/' }
 
+      @type_validators = { 'hostname' => 'host',
+			    'wildcard' => 'on_nochg',
+			    'mx' => 'host',
+			    'backmx' => 'yes_nochg',
+			    'offline' => 'yes_nochg',
+			    'webipfetchurl' => 'url' }
+
       load()
     end
 
@@ -104,6 +111,10 @@ module DNSOMatic
 	end
       end
 
+      @type_validators.each do |field, validator|
+	Validators.send(validator, field, stanza[field])
+      end
+	
       #the dnsomatic api spec indicates that mx/back mx can be either NOCHG
       #or a hostname that must resolve to an IP.
       %w(mx backmx).each do |mxtype|
@@ -138,6 +149,46 @@ module DNSOMatic
       else
 	val.to_s.gsub(/\s+/, '')
       end
+    end
+  end
+
+  class Validators
+    def self.host(field, val)
+      $stderr.puts "Validating #{field} with #{val} using Validators.host"
+      return true if val.eql?('NOCHG')
+      return true if val.match(/[^\s]+\.[^\s]+/)  #no great, but workable
+      msg = "Invalid hostname defined for #{field}.\n"
+      msg += "You gave: #{val}\n"
+      raise(DNSOMatic::Error, msg)
+    end
+
+    def self.yes_nochg(field, val)
+      $stderr.puts "Validating #{field} with #{val} using Validators.yes_nochg"
+      valid = %w(YES NO NOCHG)
+      return true if valid.include?(val.upcase)
+      msg = "Invalid value for #{field}.\n"
+      msg += "It should be one of: #{valid.join(', ')}\n"
+      msg += "You gave: #{val}\n"
+      raise(DNSOMatic::Error, msg)
+    end
+
+    def self.on_nochg(field, val)
+      $stderr.puts "Validating #{field} with #{val} using Validators.on_nochg"
+      valid = %w(ON OFF NOCHG)
+      return true if valid.include?(val.upcase)
+      msg = "Invalid value for #{field}.\n"
+      msg += "It should be one of: #{valid.join(', ')}\n"
+      msg += "You gave: #{val}\n"
+      raise(DNSOMatic::Error, msg)
+    end
+
+    def self.url(field, val)
+      $stderr.puts "Validating #{field} with #{val} using Validators.url"
+      return true if val.match('http.//.*')
+      msg = "Invalid value for #{field}.\n"
+      msg += "It should be on http(s)-style URL.\n"
+      msg += "You gave: #{val}\n"
+      raise(DNSOMatic::Error, msg)
     end
   end
 end
