@@ -112,7 +112,7 @@ module DNSOMatic
       end
 
       @type_validators.each do |field, validator|
-	Validators.send(validator, field, stanza[field])
+	self.send("validate_#{validator}", field, stanza[field])
       end
 	
       #the dnsomatic api spec indicates that mx/back mx can be either NOCHG
@@ -150,10 +150,8 @@ module DNSOMatic
 	val.to_s.gsub(/\s+/, '')
       end
     end
-  end
 
-  class Validators
-    def self.host(field, val)
+    def validate_host(field, val)
       return true if val.eql?('NOCHG')
       return true if val.match(/[^\s]+\.[^\s]+/)  #no great, but workable
       msg = "Invalid hostname defined for #{field}.\n"
@@ -161,7 +159,7 @@ module DNSOMatic
       raise(DNSOMatic::Error, msg)
     end
 
-    def self.yes_nochg(field, val)
+    def validate_yes_nochg(field, val)
       valid = %w(YES NO NOCHG)
       return true if valid.include?(val.upcase)
       msg = "Invalid value for #{field}.\n"
@@ -170,7 +168,7 @@ module DNSOMatic
       raise(DNSOMatic::Error, msg)
     end
 
-    def self.on_nochg(field, val)
+    def validate_on_nochg(field, val)
       valid = %w(ON OFF NOCHG)
       return true if valid.include?(val.upcase)
       msg = "Invalid value for #{field}.\n"
@@ -179,7 +177,7 @@ module DNSOMatic
       raise(DNSOMatic::Error, msg)
     end
 
-    def self.url(field, val)
+    def validate_url(field, val)
       return true if val.match('http.//.*')
       msg = "Invalid value for #{field}.\n"
       msg += "It should be on http(s)-style URL.\n"
