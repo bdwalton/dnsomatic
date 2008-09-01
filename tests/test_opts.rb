@@ -9,6 +9,24 @@ require 'dnsomatic'
 class TestOpts < Test::Unit::TestCase
   def setup
     $opts = DNSOMatic::Opts.instance
+    $stdout = StringIO.new('')
+    $opts.parse([])
+  end
+
+  def test_version_request_exits
+    assert_raises(SystemExit) { $opts.parse(%w(-V)) }
+  end
+
+  def test_version_number_sane
+    begin
+      $opts.parse(%w(-V))
+    rescue SystemExit
+      assert_equal("#{DNSOMatic::VERSION}\n", $stdout.string)
+    end
+  end
+
+  def test_help_exits
+    assert_raises(SystemExit) { $opts.parse(%w(-h)) }
   end
 
   def test_set_verbose
@@ -73,5 +91,9 @@ class TestOpts < Test::Unit::TestCase
 
   def test_extra_args_raise_exception
     assert_raise(DNSOMatic::Error) { $opts.parse(%w(somearg)) }
+  end
+
+  def teardown
+    $stdout.truncate(0)
   end
 end
