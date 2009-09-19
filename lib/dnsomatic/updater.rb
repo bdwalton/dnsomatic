@@ -27,6 +27,8 @@ module DNSOMatic
     def update(force = false)
       url = upd_url()
 
+      DNSOMatic::Logger.log("Updating with URL: #{url}")
+
       if !@ipstatus.changed? and !force
   Logger::log("No change in IP detected for #{@config['hostname']}.  Not updating.")
       else
