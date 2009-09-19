@@ -94,6 +94,7 @@ module OpenURI
     :progress_proc => true,
     :content_length_proc => true,
     :http_basic_authentication => true,
+    :ssl_verify => true
   }
 
   def OpenURI.check_options(options) # :nodoc:
@@ -229,7 +230,11 @@ module OpenURI
     if target.class == URI::HTTPS
       require 'net/https'
       http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      if options[:ssl_verify] == false
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      else
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      end
       store = OpenSSL::X509::Store.new
       store.set_default_paths
       http.cert_store = store
