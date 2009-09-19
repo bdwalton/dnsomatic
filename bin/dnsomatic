@@ -48,7 +48,9 @@ rescue Exception => e
 
   if opts.debug
     msg += "Backtrace:\n"
-    msg += e.backtrace.to_s
+    e.backtrace.each do |tr|
+      msg += "#{tr}\n"
+    end
   else
     msg += "If you want to see where this error was generated, use -x"
   end
