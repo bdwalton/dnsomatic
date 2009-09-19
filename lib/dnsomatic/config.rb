@@ -20,18 +20,18 @@ module DNSOMatic
       #in most cases, a user can simply set username and password in a defaults:
       #stanza and fire the client.
       @defaults = { 'hostname' => 'all.dnsomatic.com',
-		    'wildcard' => 'NOCHG',
-		    'mx' => 'NOCHG',
-		    'backmx' => 'NOCHG',
-		    'offline' => 'NOCHG',
-		    'webipfetchurl' => 'http://myip.dnsomatic.com/' }
+        'wildcard' => 'NOCHG',
+        'mx' => 'NOCHG',
+        'backmx' => 'NOCHG',
+        'offline' => 'NOCHG',
+        'webipfetchurl' => 'http://myip.dnsomatic.com/' }
 
       @type_validators = { 'hostname' => 'host',
-			    'wildcard' => 'on_nochg',
-			    'mx' => 'host',
-			    'backmx' => 'yes_nochg',
-			    'offline' => 'yes_nochg',
-			    'webipfetchurl' => 'url' }
+        'wildcard' => 'on_nochg',
+        'mx' => 'host',
+        'backmx' => 'yes_nochg',
+        'offline' => 'yes_nochg',
+        'webipfetchurl' => 'url' }
 
       load()
     end
@@ -50,12 +50,12 @@ module DNSOMatic
     def updaters(prune_to = nil)
       #don't create updater objects until they're actually requested.
       #(saves a little overhead if just displaying the config)
-		      
+
       if @updaters.nil?
-	@updaters = {}
-	@config.each_key do |token|
-	  @updaters[token] = Updater.new(@config[token])
-	end
+        @updaters = {}
+        @config.each_key do |token|
+          @updaters[token] = Updater.new(@config[token])
+        end
       end
 
       prune_to.nil? ? @updaters : one_key(@updaters, prune_to)
@@ -65,11 +65,11 @@ module DNSOMatic
 
     def one_key(hsh, key)
       if ! hsh.has_key?(key)
-	msg = "Invalid host stanza filter ('#{key}').\n"
-	msg += "You config doesn't define anything with that name."
-	raise(DNSOMatic::ConfErr, msg)
+        msg = "Invalid host stanza filter ('#{key}').\n"
+        msg += "You config doesn't define anything with that name."
+        raise(DNSOMatic::ConfErr, msg)
       else
-	{ key => hsh[key] }
+        { key => hsh[key] }
       end
     end
 
@@ -78,57 +78,57 @@ module DNSOMatic
       raise DNSOMatic::Error, "Invalid configuration format in #{@cf}" unless conf.kind_of?(Hash)
 
       if conf.has_key?('defaults')
-	#allow the user to override our built-in defaults
-	@defaults.merge!(conf['defaults'])
-	#if they've provided only the defaults stanza, we'll use it to perform
-	#the update, otherwise remove it as it has been folded into @defaults
-	conf.delete('defaults') if conf.keys.size > 1
+        #allow the user to override our built-in defaults
+        @defaults.merge!(conf['defaults'])
+        #if they've provided only the defaults stanza, we'll use it to perform
+        #the update, otherwise remove it as it has been folded into @defaults
+        conf.delete('defaults') if conf.keys.size > 1
       end
 
       conf.each_key do |name|
-	stanza = @defaults.merge(conf[name])
+        stanza = @defaults.merge(conf[name])
 
-	#just in case
-	stanza.each_pair do |k,v|
-	  stanza[k] = fmt(v)
-	end
+        #just in case
+        stanza.each_pair do |k,v|
+          stanza[k] = fmt(v)
+        end
 
-	validate(name, stanza)
+        validate(name, stanza)
 
-	#save our merged version in case we're just dump our config to stdout
-	@config[name] = stanza
+        #save our merged version in case we're just dump our config to stdout
+        @config[name] = stanza
       end
     end
 
     def validate(name, stanza)
       #first, ensure we have the _required_ fields in an update def stanza
       %w(username password).each do |required|
-	#still test for existence in case the defaults get munged.
-	if !stanza.has_key?(required) or stanza[required].nil?
-	  msg = "Invalid configuration for Host Updater named '#{name}'\n"
-	  msg += "Please define the field: #{required}.\n"
-	  raise(DNSOMatic::Error, msg)
-	end
+        #still test for existence in case the defaults get munged.
+        if !stanza.has_key?(required) or stanza[required].nil?
+          msg = "Invalid configuration for Host Updater named '#{name}'\n"
+          msg += "Please define the field: #{required}.\n"
+          raise(DNSOMatic::Error, msg)
+        end
       end
 
       @type_validators.each do |field, validator|
-	self.send("validate_#{validator}", field, stanza[field])
+        self.send("validate_#{validator}", field, stanza[field])
       end
-	
+
       #the dnsomatic api spec indicates that mx/back mx can be either NOCHG
       #or a hostname that must resolve to an IP.
       %w(mx backmx).each do |mxtype|
-	mxval = stanza[mxtype]
-	next if mxval.eql?('NOCHG')
+        mxval = stanza[mxtype]
+        next if mxval.eql?('NOCHG')
 
-	begin
-	  Resolv.getaddress(mxval)
-	rescue Resolv::ResolvError => e
-	  msg = "Invalid value for #{mxtype}.\n"
-	  msg += "It must be either NOCHG or a valid hostname.\n"
-	  msg += e.message + "\n"
-	  raise(DNSOMatic::Error, msg)
-	end
+        begin
+          Resolv.getaddress(mxval)
+        rescue Resolv::ResolvError => e
+          msg = "Invalid value for #{mxtype}.\n"
+          msg += "It must be either NOCHG or a valid hostname.\n"
+          msg += e.message + "\n"
+          raise(DNSOMatic::Error, msg)
+        end
       end
     end
 
@@ -137,17 +137,17 @@ module DNSOMatic
       #don't want to burden user with prefixing the value with !str, we'll
       #attempt to deduce what they meant here...
       if [TrueClass, FalseClass].include?(val.class)
-	val ? 'ON' : 'OFF'
+        val ? 'ON' : 'OFF'
       elsif val.kind_of?(NilClass)
-	'NOCHG'
+        'NOCHG'
       elsif val.kind_of?(String)
-	case val.downcase
-	  when 'no': 'OFF'
-	  when 'yes': 'ON'
-	  else val.gsub(/\s+/, '')
-	end
+        case val.downcase
+        when 'no': 'OFF'
+        when 'yes': 'ON'
+        else val.gsub(/\s+/, '')
+        end
       else
-	val.to_s.gsub(/\s+/, '')
+        val.to_s.gsub(/\s+/, '')
       end
     end
 

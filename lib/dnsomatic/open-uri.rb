@@ -25,8 +25,8 @@ module Kernel
     if name.respond_to?(:open)
       name.open(*rest, &block)
     elsif name.respond_to?(:to_str) &&
-          %r{\A[A-Za-z][A-Za-z0-9+\-\.]*://} =~ name &&
-          (uri = URI.parse(name)).respond_to?(:open)
+        %r{\A[A-Za-z][A-Za-z0-9+\-\.]*://} =~ name &&
+        (uri = URI.parse(name)).respond_to?(:open)
       uri.open(*rest, &block)
     else
       open_uri_original_open(name, *rest, &block)
@@ -125,8 +125,8 @@ module OpenURI
     OpenURI.check_options(options)
 
     unless mode == nil ||
-           mode == 'r' || mode == 'rb' ||
-           mode == File::RDONLY
+        mode == 'r' || mode == 'rb' ||
+        mode == File::RDONLY
       raise ArgumentError.new("invalid access mode #{mode} (#{uri.class} resource is read only.)")
     end
 
@@ -196,7 +196,7 @@ module OpenURI
     # file:///etc/passwd.
     # However this is ad hoc.  It should be extensible/configurable.
     uri1.scheme.downcase == uri2.scheme.downcase ||
-    (/\A(?:http|ftp)\z/i =~ uri1.scheme && /\A(?:http|ftp)\z/i =~ uri2.scheme)
+      (/\A(?:http|ftp)\z/i =~ uri1.scheme && /\A(?:http|ftp)\z/i =~ uri2.scheme)
   end
 
   def OpenURI.open_http(buf, target, proxy, options) # :nodoc:
@@ -274,9 +274,9 @@ module OpenURI
     case resp
     when Net::HTTPSuccess
     when Net::HTTPMovedPermanently, # 301
-         Net::HTTPFound, # 302
-         Net::HTTPSeeOther, # 303
-         Net::HTTPTemporaryRedirect # 307
+      Net::HTTPFound, # 302
+      Net::HTTPSeeOther, # 303
+      Net::HTTPTemporaryRedirect # 307
       throw :open_uri_redirect, URI.parse(resp['location'])
     else
       raise OpenURI::HTTPError.new(io.status.join(' '), io)
@@ -406,7 +406,7 @@ module OpenURI
       elsif block_given?
         yield
       elsif type && %r{\Atext/} =~ type &&
-            @base_uri && /\Ahttp\z/i =~ @base_uri.scheme
+          @base_uri && /\Ahttp\z/i =~ @base_uri.scheme
         "iso-8859-1" # RFC2616 3.7.1
       else
         nil
@@ -455,7 +455,7 @@ module OpenURI
     #    :proxy => true
     #    :proxy => false
     #    :proxy => nil
-    #   
+    #
     #  If :proxy option is specified, the value should be String, URI,
     #  boolean or nil.
     #  When String or URI is given, it is treated as proxy URI.
@@ -477,14 +477,14 @@ module OpenURI
     # [:content_length_proc]
     #  Synopsis:
     #    :content_length_proc => lambda {|content_length| ... }
-    # 
+    #
     #  If :content_length_proc option is specified, the option value procedure
     #  is called before actual transfer is started.
     #  It takes one argument which is expected content length in bytes.
-    # 
+    #
     #  If two or more transfer is done by HTTP redirection, the procedure
     #  is called only one for a last transfer.
-    # 
+    #
     #  When expected content length is unknown, the procedure is called with
     #  nil.
     #  It is happen when HTTP response has no Content-Length header.
@@ -603,7 +603,7 @@ module URI
         if no_proxy = ENV[name] || ENV[name.upcase]
           no_proxy.scan(/([^:,]*)(?::(\d+))?/) {|host, port|
             if /(\A|\.)#{Regexp.quote host}\z/i =~ self.host &&
-               (!port || self.port == port.to_i)
+                (!port || self.port == port.to_i)
               proxy_uri = nil
               break
             end

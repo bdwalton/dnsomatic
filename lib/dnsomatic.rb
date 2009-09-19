@@ -1,5 +1,5 @@
 require 'yaml'
-require 'open-uri'
+require 'dnsomatic/open-uri'
 
 # :title: dnsomatic - a DNS-o-Matic update client
 #
@@ -75,19 +75,19 @@ require 'open-uri'
 # * mx - a hostname that will handle mail delivery for this host.  it must
 #   resolve to an IP or DNS-o-Matic will ignore it.
 # * backmx - a lower priority mx record.  sames rules as mx.  you may also list
-#		these as NOCHG, which tells DNS-o-Matic to leave them as is.
+#   these as NOCHG, which tells DNS-o-Matic to leave them as is.
 # * hostname - the hostname to update.  the defaults specify this as
-#		all.dnsomatic.com, which tells dnsomatic to update all listed
-#		records with the same values.
+#   all.dnsomatic.com, which tells dnsomatic to update all listed
+#   records with the same values.
 # * wildcard - indicates whether foo.hostname and bar.hostname and baz.hostname should also resolve to the same IP as hostname.
-#		- ON = enable
-#		- NOCHG = leave it as is
-#		- _other_ = disable
+#   - ON = enable
+#   - NOCHG = leave it as is
+#   - _other_ = disable
 # * offline - sets the hostname of offline mode, which may do some redirection
-#		things depending on the service being updated.
-#		- YES = enable
-#		- NOCHG = leave it as is
-#		- _other_ = disable
+#   things depending on the service being updated.
+#   - YES = enable
+#   - NOCHG = leave it as is
+#   - _other_ = disable
 #
 # = Usage
 #
@@ -117,12 +117,11 @@ module DNSOMatic
     uri = URI.parse(url)
 
     begin
-      res = if uri.user and uri.password
-	      open(url, 'User-Agent' => USERAGENT,
-		:http_basic_authentication => [uri.user, uri.password])
-	    else
-	      open(url, 'User-Agent' => USERAGENT)
-	    end
+      opts = { 'User-Agent' => USERAGENT, :ssl_verify => false }
+      if uri.user and uri.password
+        opts[:http_basic_authentication] = [uri.user, uri.password]
+      end
+      res = open(url, opts)
       res.read
     rescue OpenURI::HTTPError, SocketError => e
       msg = "Error communicating with #{uri.host}\n"
@@ -145,7 +144,7 @@ module DNSOMatic
   def self.yaml_write(file, data)
     begin
       File.open(file, 'w') do |f|
-	f.puts data.to_yaml
+        f.puts data.to_yaml
       end
     rescue Exception => e
       msg = "An exception (#{e.class}) occurred while writing a yaml file: #{file}\n"

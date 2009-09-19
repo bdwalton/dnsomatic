@@ -17,7 +17,7 @@ module DNSOMatic
     # the URL.  A commonly used example is http://www.whatismyip.org
     def initialize(url)
       @url = url
-      @status = CHANGED	#all new lookups are changed.
+      @status = CHANGED #all new lookups are changed.
       @ip = getip()
       @last_update = Time.now
       Logger::log("Fetched new IP #{@ip} from #{@url}.")
@@ -34,51 +34,51 @@ module DNSOMatic
     # and potentially alter our status as returned by changed?.
     def update
       if min_elapsed?
-	Logger::log("Returned cached IP #{@ip} from #{@url}.")
-	@status = UNCHANGED
+        Logger::log("Returned cached IP #{@ip} from #{@url}.")
+        @status = UNCHANGED
       else
-	ip = getip()
-	@last_update = @status ? Time.now : @last_update
+        ip = getip()
+        @last_update = @status ? Time.now : @last_update
 
-	if !@ip.eql?(ip)
-	  Logger::log("Detected IP change (#{@ip} -> #{ip}) from #{@url}.")
-	else
-	  Logger::log("No IP change detected from #{@url}.")
-	end
+        if !@ip.eql?(ip)
+          Logger::log("Detected IP change (#{@ip} -> #{ip}) from #{@url}.")
+        else
+          Logger::log("No IP change detected from #{@url}.")
+        end
 
-	@status = (max_elapsed? or !@ip.eql?(ip)) ? CHANGED : UNCHANGED
-	@ip = ip
+        @status = (max_elapsed? or !@ip.eql?(ip)) ? CHANGED : UNCHANGED
+        @ip = ip
       end
     end
 
     private
     def min_elapsed?
       if Time.now - @last_update <= @@opts.minimum
-	Logger::log("Minimum lookup interval (#{@@opts.minimum}s) not expired.")
-	true
+        Logger::log("Minimum lookup interval (#{@@opts.minimum}s) not expired.")
+        true
       else
-	false
+        false
       end
     end
 
     def max_elapsed?
       if Time.now - @last_update >= @@opts.maximum
-	Logger::log("Maximum update interval (#{@@opts.maximum}s) has elapsed.  Update will be forced.")
-	true
+        Logger::log("Maximum update interval (#{@@opts.maximum}s) has elapsed.  Update will be forced.")
+        true
       else
-	false
+        false
       end
     end
 
     def getip
       ip = DNSOMatic::http_fetch(@url)
       if !ip.match(/(\d{1,3}\.){3}\d{1,3}/)
-	msg = "Strange return value from IP Lookup service: #{@url}\n"
-	msg += "Body of HTTP response was:\n"
-	msg += ip
-	raise(DNSOMatic::Error, msg)
+        msg = "Strange return value from IP Lookup service: #{@url}\n"
+        msg += "Body of HTTP response was:\n"
+        msg += ip
+        raise(DNSOMatic::Error, msg)
       else
-	ip
+        ip
       end
     end
   end
@@ -105,9 +105,9 @@ module DNSOMatic
     # IPStatus objects to.
     def setcachefile(file)
       if !File.writable?(File.dirname(file))
-	raise(DNSOMatic::Error, "Unwritable cache file directory.")
+        raise(DNSOMatic::Error, "Unwritable cache file directory.")
       elsif File.exists?(file) and !File.writable(file)
-	raise(DNSOMatic::Error, "Unwritable cache file")
+        raise(DNSOMatic::Error, "Unwritable cache file")
       end
       @cache_file = file
     end
@@ -124,9 +124,9 @@ module DNSOMatic
       #a new IPStatus object, we don't differntiate between seen and unseen
       #here.
       if @cache[url]
-	@cache[url].update
+        @cache[url].update
       else
-	@cache[url] = IPStatus.new(url)
+        @cache[url] = IPStatus.new(url)
       end
 
       save()  #ensure that we get spooled to disk.
@@ -136,12 +136,12 @@ module DNSOMatic
     private
     def load
       if File.exists?(@cache_file) and @persist
-	@cache = DNSOMatic::yaml_read(@cache_file)
+        @cache = DNSOMatic::yaml_read(@cache_file)
       end
     end
 
     def save
-      DNSOMatic::yaml_write(@cache_file, @cache) if @persist 
+      DNSOMatic::yaml_write(@cache_file, @cache) if @persist
     end
   end
 end

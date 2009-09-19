@@ -13,7 +13,7 @@ module DNSOMatic
     def self.warn(msg)
       $stdout.puts msg
     end
-  
+
     # Output a message to stdout if either verbose or alert was specified.
     def self.alert(msg)
       $stdout.puts msg if @@opts.verbose or @@opts.alert

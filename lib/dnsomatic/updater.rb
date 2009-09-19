@@ -30,17 +30,17 @@ module DNSOMatic
       DNSOMatic::Logger.log("Updating with URL: #{url}")
 
       if !@ipstatus.changed? and !force
-  Logger::log("No change in IP detected for #{@config['hostname']}.  Not updating.")
+        Logger::log("No change in IP detected for #{@config['hostname']}.  Not updating.")
       else
-  Logger::alert("Updating IP for #{@config['hostname']} to #{@ipstatus.ip}.")
-  update = DNSOMatic::http_fetch(url)
+        Logger::alert("Updating IP for #{@config['hostname']} to #{@ipstatus.ip}.")
+        update = DNSOMatic::http_fetch(url)
 
-  if !update.match(/^good\s+#{@ipstatus.ip}$/)
-    msg = "Error updating host definition for #{@config['hostname']}\n"
-    msg += "Results:\n#{update}\n"
-    msg += "Error codes at: https://www.dnsomatic.com/wiki/api"
-    raise(DNSOMatic::Error, msg)
-  end
+        if !update.match(/^good\s+#{@ipstatus.ip}$/)
+          msg = "Error updating host definition for #{@config['hostname']}\n"
+          msg += "Results:\n#{update}\n"
+          msg += "Error codes at: https://www.dnsomatic.com/wiki/api"
+          raise(DNSOMatic::Error, msg)
+        end
       end
 
       true
@@ -59,7 +59,7 @@ module DNSOMatic
     def to_s
       upd_url
     end
-	
+
     private
     def upd_url
       opt_params = %w(wildcard mx backmx offline)
