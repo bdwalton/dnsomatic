@@ -24,20 +24,21 @@ module DNSOMatic
     # By default, the we'll honour the changed? status of the IPStatus object
     # returned to us, but if force is set to true, we'll send the update
     # request anyway.
-    def update(force = false) url = upd_url()
+    def update(force = false)
+      url = upd_url()
 
       if !@ipstatus.changed? and !force
-	Logger::log("No change in IP detected for #{@config['hostname']}.  Not updating.")
+  Logger::log("No change in IP detected for #{@config['hostname']}.  Not updating.")
       else
-	Logger::alert("Updating IP for #{@config['hostname']} to #{@ipstatus.ip}.")
-	update = DNSOMatic::http_fetch(url)
+  Logger::alert("Updating IP for #{@config['hostname']} to #{@ipstatus.ip}.")
+  update = DNSOMatic::http_fetch(url)
 
-	if !update.match(/^good\s+#{@ipstatus.ip}$/)
-	  msg = "Error updating host definition for #{@config['hostname']}\n"
-	  msg += "Results:\n#{update}\n"
-	  msg += "Error codes at: https://www.dnsomatic.com/wiki/api"
-	  raise(DNSOMatic::Error, msg)
-	end
+  if !update.match(/^good\s+#{@ipstatus.ip}$/)
+    msg = "Error updating host definition for #{@config['hostname']}\n"
+    msg += "Results:\n#{update}\n"
+    msg += "Error codes at: https://www.dnsomatic.com/wiki/api"
+    raise(DNSOMatic::Error, msg)
+  end
       end
 
       true
@@ -69,9 +70,9 @@ module DNSOMatic
       url = "https://#{u}:#{p}@updates.dnsomatic.com/nic/update?"
       name_ip = "hostname=#{@config['hostname']}&myip=#{@ipstatus.ip}"
       url += opt_params.inject(name_ip) do |params, curp|
-	val = @config[curp]
-	next if val.eql?('') or val.nil?
-	params += "&#{curp}=#{val}"
+        val = @config[curp]
+        next if val.eql?('') or val.nil?
+        params += "&#{curp}=#{val}"
       end
       url
     end
