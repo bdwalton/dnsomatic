@@ -142,9 +142,12 @@ module DNSOMatic
         'NOCHG'
       elsif val.kind_of?(String)
         case val.downcase
-        when 'no': 'OFF'
-        when 'yes': 'ON'
-        else val.gsub(/\s+/, '')
+        when 'no'
+          'OFF'
+        when 'yes'
+          'ON'
+        else
+          val.gsub(/\s+/, '')
         end
       else
         val.to_s.gsub(/\s+/, '')
